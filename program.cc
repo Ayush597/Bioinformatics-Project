@@ -16,6 +16,25 @@ string LoadFromFile(const string &filename) {
     return ss.str();
 }
 
+vector<int> EncodeAlphabetically(const string& text) {
+    int n = text.length();
+    vector<int> encoded(n);
+
+    for (int i = 0; i < n; i++) {
+        encoded[i] = text[i] - 'a';
+    }
+
+    return encoded;
+}
+
+template<typename T>
+void PrintVector(const vector<T> &v) {
+    for (auto i = v.begin(); i != v.end(); ++i) {
+        cout << *i << ' ';
+    }
+    cout << endl;
+}
+
 int main(int argc, char* argv[]) {
     // Check the number of parameters
     if (argc < 2) {
@@ -29,39 +48,27 @@ int main(int argc, char* argv[]) {
 
     string filename = argv[1];
     string text = LoadFromFile(filename);
-    text.append("$");
-
     cout << text << endl;
-    int length = text.length();
 
-    // build suffix array
-    vector<int> suffix_array = BuildSuffixArray(text);
-    for (auto i = suffix_array.begin(); i != suffix_array.end(); ++i) {
-        cout << *i << ' ';
-    }
-    cout << endl;
+    vector<int> encoded = EncodeAlphabetically(text);
+    PrintVector(encoded);
 
     // create array of suffix types
-    char suffix_types[length];
-    suffix_types[length - 1] = '*';
-    suffix_types[length - 2] = 'L';
+    vector<char> suffix_types = BuildTypeMap(encoded);
+    cout << string(suffix_types.data()) << endl;
 
-    for (int i = length - 3; i >= 0; i--) {
-        char c1 = text[i];
-        char c2 = text[i + 1];
+    vector<int> bucket_sizes = FindBucketSizes(encoded, 3);
+    PrintVector(bucket_sizes);
 
-        if (c1 < c2 || (c1 == c2 && suffix_types[i+1] == 'S')) {
-            suffix_types[i] = 'S';
-        } else {
-            suffix_types[i] = 'L';
+    PrintVector(FindBucketTails(bucket_sizes));
 
-            if (suffix_types[i+1] == 'S') {
-                suffix_types[i+1] = '*';
-            }
-        }
-    }
+    vector<int> guessed_suffix_array = guessLMSSort(encoded, bucket_sizes, suffix_types);
+    PrintVector(guessed_suffix_array);
 
-    cout << string(suffix_types).substr(0, length) << endl;
+    // build suffix array
+    // text.append("$");
+    // vector<int> suffix_array = BuildSuffixArray(encoded);
+    // PrintVector(suffix_array);
 
-    return 0;
+    // return 0;
 }
