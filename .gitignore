@@ -62,3 +62,6 @@ tags
 .history
 
 # End of https://www.gitignore.io/api/vim,c++,visualstudiocode
+
+# Folder with large data files
+data/
