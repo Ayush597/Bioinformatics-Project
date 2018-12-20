@@ -27,14 +27,6 @@ vector<int> EncodeAlphabetically(const string& text) {
     return encoded;
 }
 
-template<typename T>
-void PrintVector(const vector<T> &v) {
-    for (auto i = v.begin(); i != v.end(); ++i) {
-        cout << *i << ' ';
-    }
-    cout << endl;
-}
-
 int main(int argc, char* argv[]) {
     // Check the number of parameters
     if (argc < 2) {
@@ -51,24 +43,8 @@ int main(int argc, char* argv[]) {
     cout << text << endl;
 
     vector<int> encoded = EncodeAlphabetically(text);
-    PrintVector(encoded);
+    PrintVector(encoded, "Vector encoding: ");
 
-    // create array of suffix types
-    vector<char> suffix_types = BuildTypeMap(encoded);
-    cout << string(suffix_types.data()) << endl;
-
-    vector<int> bucket_sizes = FindBucketSizes(encoded, 3);
-    PrintVector(bucket_sizes);
-
-    PrintVector(FindBucketTails(bucket_sizes));
-
-    vector<int> guessed_suffix_array = guessLMSSort(encoded, bucket_sizes, suffix_types);
-    PrintVector(guessed_suffix_array);
-
-    // build suffix array
-    // text.append("$");
-    // vector<int> suffix_array = BuildSuffixArray(encoded);
-    // PrintVector(suffix_array);
-
-    // return 0;
+    vector<int> suffix_array = BuildSuffixArray(encoded, 3);
+    PrintVector(suffix_array, "Suffix array: ");
 }
