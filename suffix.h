@@ -18,6 +18,25 @@ void InduceSortL(const std::vector<int> &text, const std::vector<int> &bucket_si
 void InduceSortS(const std::vector<int> &text, const std::vector<int> &guessed_suffix_array,
                  const std::vector<char> &typemap, std::vector<int>* bucket_sizes);
 
+bool LMSSubstringsAreEqual(const std::vector<int> &text,
+                           const std::vector<char> &typemap,
+                           int offset_a, int offset_b);
+
+int SummarizeSuffixArray(const std::vector<int> &text,
+                         const std::vector<int> &suffix_array,
+                         const std::vector<char> &typemap,
+                         std::vector<int>* summary_string,
+                         std::vector<int>* summary_suffix_offsets);
+
+std::vector<int> MakeSummarySuffixArray(const std::vector<int> &summary_string,
+                                        int summary_alphabet_size);
+
+std::vector<int> AccurateLMSSort(const std::vector<int> &text,
+                                 const std::vector<int> &bucket_sizes,
+                                 const std::vector<char> &typemap,
+                                 const std::vector<int> &summary_suffix_array,
+                                 const std::vector<int> &summary_suffix_offsets);
+
 template<typename T>
 void PrintVector(const std::vector<T> &v, const std::string& name="") {
     std::cout << name;

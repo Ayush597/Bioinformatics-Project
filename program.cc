@@ -29,9 +29,9 @@ vector<int> EncodeAlphabetically(const string& text) {
 
 int main(int argc, char* argv[]) {
     // Check the number of parameters
-    if (argc < 2) {
+    if (argc < 3) {
         // Tell the user how to run the program
-        cerr << "Usage: " << argv[0] << " DATA_PATH" << endl;
+        cerr << "Usage: " << argv[0] << " DATA_PATH ALPHABET_SIZE" << endl;
         /* "Usage messages" are a conventional way of telling the user
          * how to run a program if they enter the command incorrectly.
          */
@@ -42,9 +42,11 @@ int main(int argc, char* argv[]) {
     string text = LoadFromFile(filename);
     cout << text << endl;
 
+    int alphabet_size = stoi(argv[2]);
+
     vector<int> encoded = EncodeAlphabetically(text);
     PrintVector(encoded, "Vector encoding: ");
 
-    vector<int> suffix_array = BuildSuffixArray(encoded, 3);
+    vector<int> suffix_array = BuildSuffixArray(encoded, alphabet_size);
     PrintVector(suffix_array, "Suffix array: ");
 }
