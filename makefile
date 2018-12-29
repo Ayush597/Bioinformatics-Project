@@ -26,23 +26,28 @@ program.o: program.cc suffix.h
 suffix.o: suffix.cc suffix.h
 	$(CXX) $(CXXFLAGS) -c suffix.cc
 
-$(SAIS_LCP_MAIN_OUT): $(SAIS_LCP_MAIN_FILE_NAME).o $(SAIS_LCP_FILE_NAME).o
-	$(CXX) $(CXXFLAGS) -o $(SAIS_LCP_MAIN_OUT) $(SAIS_LCP_MAIN_FILE_NAME).o $(SAIS_LCP_FILE_NAME).o
+# $@: the target filename.
+# $*: the target filename without the file extension.
+# $<: the first prerequisite filename.
+# $^: the filenames of all the prerequisites, separated by spaces, discard duplicates.
+# $+: similar to $^, but includes duplicates.
+# $?: the names of all prerequisites that are newer than the target, separated by spaces.
 
-$(SAIS_LCP_MAIN_FILE_NAME).o: $(SAIS_LCP_MAIN_FILE_NAME).cc $(SAIS_LCP_FILE_NAME).h
-	$(CXX) $(CXXFLAGS) -c $(SAIS_LCP_MAIN_FILE_NAME).cc
+$(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o sais_util.o sa_to_lcp.o
+	$(CXX) $(CXXFLAGS) -o $(SAIS_LCP_MAIN_OUT) $^
 
-$(SAIS_LCP_FILE_NAME).o: $(SAIS_LCP_FILE_NAME).cc $(SAIS_LCP_FILE_NAME).h
-	$(CXX) $(CXXFLAGS) -c $(SAIS_LCP_FILE_NAME).cc
+sais_lcp_main.o: sais_lcp_main.cc sais_lcp.h sa_to_lcp.h
+	$(CXX) $(CXXFLAGS) -c $*.cc
 
-# $(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o
-# 	$(CXX) $(CXXFLAGS) -o $(SAIS_LCP_MAIN_OUT) sais_lcp_main.o sais_lcp.o
+sais_lcp.o: sais_lcp.cc sais_lcp.h sais_util.h sa_to_lcp.h
+	$(CXX) $(CXXFLAGS) -c $*.cc
 
-# sais_lcp_main.o: sais_lcp_main.cc sais_lcp.h
-# 	$(CXX) $(CXXFLAGS) -c sais_lcp_main.cc
+sais_util.o: sais_util.cc sais_util.h
+	$(CXX) $(CXXFLAGS) -c $*.cc
 
-# sais_lcp.o: sais_lcp.cc sais_lcp.h
-# 	$(CXX) $(CXXFLAGS) -c sais_lcp.cc
+sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h
+	$(CXX) $(CXXFLAGS) -c $*.cc
 
 clean:
-	$(RM) program.out program.o suffix.o
+	$(RM) $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) program.o suffix.o \
+			sais_lcp_main.o sais_lcp.o sais_util.o sa_to_lcp.o
