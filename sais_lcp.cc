@@ -1,4 +1,4 @@
-#include "suffix.h"
+#include "sais_lcp.h"
 
 #include <algorithm>
 
@@ -73,8 +73,12 @@ bool IsLMSChar(int offset, const vector<char> &typemap) {
     return typemap[offset] == kSStarType;
 }
 
-vector<int> GuessLMSSort(const vector<int> &text, vector<int> &bucket_sizes, const vector<char> &type_map) {
-    vector<int> guess(text.size() + 1, -1);
+void GuessLMSSort(const vector<int> &text,
+                  vector<int> &bucket_sizes,
+                  const vector<char> &type_map,
+                  vector<int> *suffix_array,
+                  vector<int> *lcp_array) {
+
     vector<int> bucket_tails = FindBucketTails(bucket_sizes);
 
     int n = text.size();
@@ -83,47 +87,52 @@ vector<int> GuessLMSSort(const vector<int> &text, vector<int> &bucket_sizes, con
         if (!(IsLMSChar(i, type_map))) continue;
 
         int bucket_index = text[i];
-        guess[bucket_tails[bucket_index]] = i;
+        (*suffix_array)[bucket_tails[bucket_index]] = i;
         bucket_tails[bucket_index] -= 1;
     }
 
-    guess[0] = n;
-    return guess;
+    (*suffix_array)[0] = n;
 }
 
-void InduceSortL(const vector<int> &text, const vector<int> &bucket_sizes,
-                 const vector<char> &typemap, vector<int>* guessed_suffix_array) {
+void InduceSortL(const vector<int> &text,
+                 const vector<int> &bucket_sizes,
+                 const vector<char> &typemap,
+                 vector<int> *suffix_array,
+                 vector<int> *lcp_array) {
 
     vector<int> bucket_heads = FindBucketHeads(bucket_sizes);
 
-    int n = guessed_suffix_array->size();
+    int n = suffix_array->size();
     for (int i = 0; i < n; i++) {
-        if ((*guessed_suffix_array)[i] == -1) continue;
+        if ((*suffix_array)[i] == -1) continue;
 
-        int j = (*guessed_suffix_array)[i] - 1;
+        int j = (*suffix_array)[i] - 1;
         if (j < 0) continue;
         if (typemap[j] != kLType) continue;
 
         int bucket_index = text[j];
-        (*guessed_suffix_array)[bucket_heads[bucket_index] + 1] = j;
+        (*suffix_array)[bucket_heads[bucket_index] + 1] = j;
         bucket_heads[bucket_index] += 1;
     }
 }
 
-void InduceSortS(const vector<int> &text, const vector<int> &bucket_sizes,
-                 const vector<char> &typemap, vector<int>* guessed_suffix_array) {
+void InduceSortS(const vector<int> &text,
+                 const vector<int> &bucket_sizes,
+                 const vector<char> &typemap,
+                 vector<int> *suffix_array,
+                 vector<int> *guessed_lcp_array) {
 
     vector<int> bucket_tails = FindBucketTails(bucket_sizes);
 
-    int n = guessed_suffix_array->size();
+    int n = suffix_array->size();
     for (int i = n - 1; i >= 0; i--) {
-        int j = (*guessed_suffix_array)[i] - 1;
+        int j = (*suffix_array)[i] - 1;
 
         if (j < 0) continue;
         if (typemap[j] != kSType && typemap[j] != kSStarType) continue;
 
         int bucket_index = text[j];
-        (*guessed_suffix_array)[bucket_tails[bucket_index]] = j;
+        (*suffix_array)[bucket_tails[bucket_index]] = j;
         bucket_tails[bucket_index] -= 1;
     }
 }
@@ -199,80 +208,99 @@ int SummarizeSuffixArray(const std::vector<int> &text,
     return summary_alphabet_size;
 }
 
-std::vector<int> MakeSummarySuffixArray(const std::vector<int> &summary_string,
-                                        int summary_alphabet_size) {
+void MakeSummarySuffixArray(const std::vector<int> &summary_string,
+                                        int summary_alphabet_size,
+                                        int debug_depth,
+                                        vector<int> *suffix_array,
+                                        vector<int> *lcp_array) {
 
     int summary_len = summary_string.size();
     if (summary_alphabet_size == summary_len) {
-
-        vector<int> summary_suffix_array(summary_len + 1, -1);
-        summary_suffix_array[0] = summary_len;
+        (*suffix_array)[0] = summary_len;
 
         for (int x = 0, n = summary_len; x < n; x++) {
             int y = summary_string[x];
-            summary_suffix_array[y+1] = x;
+            (*suffix_array)[y+1] = x;
         }
-
-        return summary_suffix_array;
+    } else {
+        BuildSuffixArray(summary_string, summary_alphabet_size, debug_depth, suffix_array, lcp_array);
     }
-
-    return BuildSuffixArray(summary_string, summary_alphabet_size);
 }
 
-vector<int> AccurateLMSSort(const vector<int> &text,
-                            const vector<int> &bucket_sizes,
-                            const vector<char> &typemap,
-                            const vector<int> &summary_suffix_array,
-                            const vector<int> &summary_suffix_offsets) {
-
-    vector<int> suffix_offets(text.size() + 1, -1);
+void AccurateLMSSort(const vector<int> &text,
+                     const vector<int> &bucket_sizes,
+                     const vector<char> &typemap,
+                     const vector<int> &summary_suffix_array,
+                     const vector<int> &summary_lcp_array,
+                     const vector<int> &summary_suffix_offsets,
+                     vector<int> *suffix_array,
+                     vector<int> *lcp_array) {
 
     vector<int> bucket_tails = FindBucketTails(bucket_sizes);
     for (int i = summary_suffix_array.size() - 1; i > 1; i--) {
         int string_index = summary_suffix_offsets[summary_suffix_array[i]];
 
         int bucket_index = text[string_index];
-        suffix_offets[bucket_tails[bucket_index]] = string_index;
+        (*suffix_array)[bucket_tails[bucket_index]] = string_index;
         bucket_tails[bucket_index] -= 1;
     }
 
-    suffix_offets[0] = text.size();
-
-    return suffix_offets;
+    (*suffix_array)[0] = text.size();
 }
 
-vector<int> BuildSuffixArray(const vector<int> &text, int alphabet_size) {
-    vector<char> typemap = BuildTypeMap(text);
+void BuildSuffixArray(const vector<int> &text,
+                      int alphabet_size,
+                      int debug_depth,
+                      vector<int> *suffix_array,
+                      vector<int> *lcp_array) {
 
+    int cell_size = NumDigits(text.size()) + 1;
+    if (allow_printing) {
+        cout << endl;
+    }
+    PrintVector(text, "Input: ", cell_size, debug_depth);
+
+    vector<char> typemap = BuildTypeMap(text);
     vector<int> bucket_sizes = FindBucketSizes(text, alphabet_size);
 
-    vector<int> guessed_suffix_array = GuessLMSSort(text, bucket_sizes, typemap);
-    PrintVector(guessed_suffix_array, "Guessed SA: ");
+    GuessLMSSort(text, bucket_sizes, typemap, suffix_array, lcp_array);
+    PrintVector(*suffix_array, "Guessed SA: ", cell_size, debug_depth);
 
-    InduceSortL(text, bucket_sizes, typemap, &guessed_suffix_array);
-    PrintVector(guessed_suffix_array, "After L induced: ");
+    InduceSortL(text, bucket_sizes, typemap, suffix_array, lcp_array);
+    PrintVector(*suffix_array, "After L induced: ", cell_size, debug_depth);
 
-    InduceSortS(text, bucket_sizes, typemap, &guessed_suffix_array);
-    PrintVector(guessed_suffix_array, "After S induced: ");
+    InduceSortS(text, bucket_sizes, typemap, suffix_array, lcp_array);
+    PrintVector(*suffix_array, "After S induced: ", cell_size, debug_depth);
 
     vector<int> summary_string;
     vector<int> summary_suffix_offsets;
-    int summary_alphabet_size = SummarizeSuffixArray(
-        text, guessed_suffix_array, typemap, &summary_string, &summary_suffix_offsets);
-    PrintVector(summary_string, "Summary string: ");
-    PrintVector(summary_suffix_offsets, "Suffix offsets: ");
+    int summary_alphabet_size = SummarizeSuffixArray(text,
+                                                     *suffix_array,
+                                                     typemap,
+                                                     &summary_string,
+                                                     &summary_suffix_offsets);
+    PrintVector(summary_string, "Summary string: ", cell_size, debug_depth);
+    PrintVector(summary_suffix_offsets, "Suffix offsets: ", cell_size, debug_depth);
 
-    vector<int> summary_suffix_array = MakeSummarySuffixArray(summary_string, summary_alphabet_size);
-    PrintVector(summary_suffix_array, "Summary SA: ");
+    vector<int> summary_suffix_array(summary_string.size() + 1, -1);
+    vector<int> summary_lcp_array(summary_string.size() + 1, -1);
+    MakeSummarySuffixArray(summary_string, summary_alphabet_size, debug_depth + 1,
+                           &summary_suffix_array, &summary_lcp_array);
+    PrintVector(summary_suffix_array, "Summary SA: ", cell_size, debug_depth);
 
-    vector<int> result = AccurateLMSSort(text, bucket_sizes, typemap, summary_suffix_array, summary_suffix_offsets);
-    PrintVector(result, "Accurate SA: ");
+    fill((*suffix_array).begin(), (*suffix_array).end(), -1);
 
-    InduceSortL(text, bucket_sizes, typemap, &result);
-    PrintVector(result, "Acc after L induced: ");
+    AccurateLMSSort(text, bucket_sizes, typemap,
+                    summary_suffix_array, summary_lcp_array, summary_suffix_offsets,
+                    suffix_array, lcp_array);
+    PrintVector(*suffix_array, "Accurate SA: ", cell_size, debug_depth);
 
-    InduceSortS(text, bucket_sizes, typemap, &result);
-    PrintVector(result, "Acc after S induced: ");
+    InduceSortL(text, bucket_sizes, typemap, suffix_array, lcp_array);
+    PrintVector(*suffix_array, "Acc after L: ", cell_size, debug_depth);
 
-    return result;
+    InduceSortS(text, bucket_sizes, typemap, suffix_array, lcp_array);
+    PrintVector(*suffix_array, "Acc after S: ", cell_size, debug_depth);
+    if (allow_printing) {
+        cout << endl;
+    }
 }
