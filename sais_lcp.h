@@ -3,14 +3,18 @@
 
 #include <iostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 void BuildSuffixArray(const std::vector<int> &text, int alphabet_size,
                       int debug_depth, std::vector<int> *suffix_array,
                       std::vector<int> *lcp_array);
 
-template <class T>
+template <typename T>
 int NumDigits(T number) {
+  if (std::is_same<T, char>::value) {
+    return 1;
+  }
   int digits = 0;
   if (number <= 0) digits = 1;
   while (number) {
@@ -41,7 +45,7 @@ void PrintVector(const std::vector<T> &v, const std::string &name = "",
     for (int i = 0; i < number_padding; i++) {
       std::cout << ' ';
     }
-    std::cout << *i << ' ';
+    std::cout << *i << "  ";
   }
   std::cout << std::endl;
 }

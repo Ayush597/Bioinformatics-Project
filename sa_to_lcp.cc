@@ -5,12 +5,9 @@
 using namespace std;
 
 // To construct and return LCP using Kasai's algorithm in O(n)
-vector<int> SuffixArrayToLCP(const vector<int> &text,
-                             const vector<int> &suffixArr) {
+void SuffixArrayToLCP(const vector<int> &text, const vector<int> &suffixArr,
+                      vector<int> *lcp_array) {
   int n = suffixArr.size();
-
-  // To store LCP array
-  vector<int> lcp_array(n, 0);
 
   // An auxiliary array to store inverse of suffix array
   // elements. For example if suffixArr[0] is 5, the
@@ -47,7 +44,8 @@ vector<int> SuffixArrayToLCP(const vector<int> &text,
       k++;
     }
 
-    lcp_array[inverse_suffix_array[i] + 1] = k;  // lcp for the present suffix.
+    // lcp for the present suffix.
+    (*lcp_array)[inverse_suffix_array[i] + 1] = k;
 
     // Deleting the starting character from the string.
     if (k > 0) {
@@ -55,5 +53,6 @@ vector<int> SuffixArrayToLCP(const vector<int> &text,
     }
   }
 
-  return lcp_array;
+  // first element in LCP is undefined because it has no predecessor
+  (*lcp_array)[0] = 0;
 }

@@ -3,7 +3,8 @@
 
 #include <vector>
 
-std::vector<int> SuffixArrayToLCP(const std::vector<int> &text,
-                                  const std::vector<int> &suffixArr);
+void SuffixArrayToLCP(const std::vector<int> &text,
+                      const std::vector<int> &suffixArr,
+                      std::vector<int> *lcp_array);
 
 #endif

@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
   PrintVector(encoded, "Vector encoding: ", cell_size);
 
   // quick & dirty
-  allow_printing = false;
+  // allow_printing = false;
   vector<int> suffix_array(text.size() + 1, -1);
   vector<int> lcp_array(text.size() + 1, -1);
   BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
   allow_printing = true;
   PrintVector(suffix_array, "Suffix array:    ", cell_size);
   PrintVector(lcp_array, "LCP array:       ", cell_size);
-  vector<int> correct_lcp = SuffixArrayToLCP(encoded, suffix_array);
+  vector<int> correct_lcp(text.size() + 1);
+  SuffixArrayToLCP(encoded, suffix_array, &correct_lcp);
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
 }
