@@ -22,4 +22,7 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            const std::vector<char> &typemap, int offset_a,
                            int offset_b);
 
+int count_same_chars(const std::vector<int> &text, int first_pos_in_text,
+                     int second_pos_in_text);
+
 #endif

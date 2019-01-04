@@ -49,7 +49,7 @@ vector<int> FindBucketHeads(const vector<int> &bucket_sizes) {
 
   int offset = 1;
   for (int i = 0; i < n; i++) {
-    tails[i] = offset - 1;
+    tails[i] = offset;
     offset += bucket_sizes[i];
   }
 
@@ -94,4 +94,19 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 
     i++;
   }
+}
+
+int count_same_chars(const vector<int> &text, int first_pos_in_text,
+                     int second_pos_in_text) {
+  int num_same_chars = 0;
+  while (true) {
+    if (text[first_pos_in_text] == text[second_pos_in_text]) {
+      num_same_chars++;
+    } else {
+      break;
+    }
+    first_pos_in_text++;
+    second_pos_in_text++;
+  }
+  return num_same_chars;
 }

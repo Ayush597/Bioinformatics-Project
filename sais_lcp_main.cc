@@ -19,7 +19,7 @@ string LoadFromFile(const string& filename) {
   return ss.str();
 }
 
-vector<int> EncodeAlphabetically(const string& text, int alphabet_size) {
+vector<int> EncodeAlphabetically(const string& text, int alphabet_size=256) {
   int n = text.length();
   vector<int> encoded(n);
 
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
   string text = LoadFromFile(filename);
   cout << text << endl;
 
-  vector<int> encoded = EncodeAlphabetically(text, alphabet_size);
+  vector<int> encoded = EncodeAlphabetically(text);
 
   int cell_size = NumDigits(text.size()) + 1;
   PrintVector(encoded, "Vector encoding: ", cell_size);
