@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -19,7 +20,20 @@ string LoadFromFile(const string& filename) {
   return ss.str();
 }
 
-vector<int> EncodeAlphabetically(const string& text, int alphabet_size=256) {
+vector<int> EncodeAlphabetically(const string& text) {
+  int n = text.length();
+  vector<int> encoded(n);
+
+  int min_char = *min_element(begin(text), end(text));
+
+  for (int i = 0; i < n; i++) {
+    encoded[i] = text[i] - min_char;
+  }
+
+  return encoded;
+}
+
+vector<int> EncodeByLexicographicalOrder(const string& text, int alphabet_size=256) {
   int n = text.length();
   vector<int> encoded(n);
 
@@ -77,7 +91,7 @@ int main(int argc, char* argv[]) {
   PrintVector(encoded, "Vector encoding: ", cell_size);
 
   // quick & dirty
-  // allow_printing = false;
+  allow_printing = false;
   vector<int> suffix_array(text.size() + 1, -1);
   vector<int> lcp_array(text.size() + 1, -1);
   BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
@@ -88,4 +102,10 @@ int main(int argc, char* argv[]) {
   vector<int> correct_lcp(text.size() + 1);
   SuffixArrayToLCP(encoded, suffix_array, &correct_lcp);
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
+  
+  if (lcp_array == correct_lcp) {
+    cout << "LCP is OK" << endl;
+  } else {
+    cout << "LCP is WRONG" << endl;
+  }
 }

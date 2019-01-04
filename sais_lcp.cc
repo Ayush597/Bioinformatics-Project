@@ -35,6 +35,9 @@ void InduceSortL(const vector<int> &text, const vector<int> &bucket_sizes,
   vector<int> is_first_in_bucket(n, 0);
 
   for (int i = 0, m = bucket_heads.size(); i < m; i++) {
+    if (bucket_heads[i] >= n) {
+      break;
+    }
     is_first_in_bucket[bucket_heads[i]] = 1;
   }
 
@@ -69,7 +72,6 @@ void InduceSortL(const vector<int> &text, const vector<int> &bucket_sizes,
 
     if (is_first_in_bucket[k]) {
       (*lcp_array)[k] = 0;
-      is_first_in_bucket[k] = 0;
       continue;
     }
 
@@ -93,7 +95,14 @@ void InduceSortS(const vector<int> &text, const vector<int> &bucket_sizes,
 
   vector<int> bucket_tails = FindBucketTails(bucket_sizes);
   vector<int> iteration(n);
-  vector<int> is_first_in_bucket(n, 1);
+  vector<int> is_first_in_bucket(n, 0);
+
+  for (int i = 0, m = bucket_tails.size(); i < m; i++) {
+    if (bucket_tails[i] >= n) {
+      break;
+    }
+    is_first_in_bucket[bucket_tails[i]] = 1;
+  }
 
   for (int i = n - 1; i >= 0; i--) {
     int j = (*suffix_array)[i] - 1;
@@ -112,8 +121,14 @@ void InduceSortS(const vector<int> &text, const vector<int> &bucket_sizes,
 
     iteration[k] = i;
 
+    if (k - 1 >= 0 && (*suffix_array)[k - 1] != -1) {
+      int ls_seam_same_chars =
+          count_same_chars(text, (*suffix_array)[k - 1], (*suffix_array)[k]);
+      (*lcp_array)[k] = ls_seam_same_chars;
+      continue;
+    }
+
     if (is_first_in_bucket[k]) {
-      is_first_in_bucket[k] = 0;
       continue;
     }
 
@@ -315,15 +330,19 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   PrintVector(*lcp_array, "Accurate LCP: ", cell_size, debug_depth);
 
   InduceSortL(text, bucket_sizes, typemap, suffix_array, lcp_array);
-  PrintVector(*suffix_array, "\nAcc after L: ", cell_size, debug_depth);
+  PrintVector(*suffix_array, "Acc after L: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "LCP after L: ", cell_size, debug_depth);
 
   InduceSortS(text, bucket_sizes, typemap, suffix_array, lcp_array);
-  PrintVector(*suffix_array, "\nAcc after S: ", cell_size, debug_depth);
+  PrintVector(*suffix_array, "Acc after S: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "LCP after S: ", cell_size, debug_depth);
 
-  // SuffixArrayToLCP(text, *suffix_array, lcp_array);
-  // PrintVector(*lcp_array, "LCP scaled: ", cell_size, debug_depth);
+  SuffixArrayToLCP(text, *suffix_array, lcp_array);
+  PrintVector(*lcp_array, "LCP scaled: ", cell_size, debug_depth);
+
+  // vector<int> correct_lcp_array(text.size() + 1, -1);
+  // SuffixArrayToLCP(text, *suffix_array, &correct_lcp_array);
+  // PrintVector(correct_lcp_array, "LCP scaled: ", cell_size, debug_depth);
 
   if (allow_printing) {
     cout << endl;
