@@ -83,23 +83,31 @@ int main(int argc, char* argv[]) {
 
   string filename = argv[1];
   string text = LoadFromFile(filename);
-  cout << text << endl;
+  int n = text.size() + 1;
 
   vector<int> encoded = EncodeAlphabetically(text);
 
   int cell_size = NumDigits(text.size()) + 1;
+  vector<int> indices(n);
+  vector<char> text_chars(n);
+  for (int i = 0; i < n; i++) {
+    indices[i] = i;
+    text_chars[i] = text[i];
+  }
+  PrintVector(indices, "Index: ", cell_size);
+  PrintVector(text_chars, "Text: ", cell_size);
   PrintVector(encoded, "Vector encoding: ", cell_size);
 
   // quick & dirty
-  allow_printing = false;
-  vector<int> suffix_array(text.size() + 1, -1);
-  vector<int> lcp_array(text.size() + 1, -1);
+  // allow_printing = false;
+  vector<int> suffix_array(n, -1);
+  vector<int> lcp_array(n, -1);
   BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
 
   allow_printing = true;
   PrintVector(suffix_array, "Suffix array:    ", cell_size);
   PrintVector(lcp_array, "LCP array:       ", cell_size);
-  vector<int> correct_lcp(text.size() + 1);
+  vector<int> correct_lcp(n);
   SuffixArrayToLCP(encoded, suffix_array, &correct_lcp);
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
   
