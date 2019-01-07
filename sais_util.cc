@@ -98,6 +98,10 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 
 int count_same_chars(const vector<int> &text, int first_pos_in_text,
                      int second_pos_in_text) {
+  if ((unsigned int) first_pos_in_text >= text.size() || (unsigned int) second_pos_in_text >= text.size()) {
+    return 0;
+  }
+  
   int num_same_chars = 0;
   while (true) {
     if (text[first_pos_in_text] == text[second_pos_in_text]) {

@@ -54,7 +54,6 @@ void InduceSortL(const vector<int> &text, const vector<int> &bucket_sizes,
     (*suffix_array)[k] = j;
     last_l_suffix[c] = k;
     bucket_heads[c] += 1;
-    
 
     if (lcp_array == NULL) {
       continue;
@@ -69,10 +68,11 @@ void InduceSortL(const vector<int> &text, const vector<int> &bucket_sizes,
       (*lcp_array)[k] = 0;
     }
 
-    if (k + 1 < n && typemap[(*suffix_array)[k + 1]] == kSStarType) {
+    int pos_of_first_lms = (*first_lms)[c];
+    if (pos_of_first_lms != -1) {
       int ls_seam_same_chars =
-          count_same_chars(text, (*suffix_array)[k], (*suffix_array)[k + 1]);
-      (*lcp_array)[k + 1] = ls_seam_same_chars;
+          count_same_chars(text, (*suffix_array)[k], (*suffix_array)[pos_of_first_lms]);
+      (*lcp_array)[pos_of_first_lms] = ls_seam_same_chars;
     }
 
     if (is_first_in_bucket[k]) {
@@ -256,6 +256,7 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
         count_same_chars(text, first_pos_in_text, second_pos_in_text);
 
     lms_lcp_values[k] = common_lsm_sum + num_same_chars_after_lsm;
+    // lms_lcp_values[k] = 0;
   }
 
   return lms_lcp_values;
