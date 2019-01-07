@@ -6,6 +6,7 @@
 
 #include "sa_to_lcp.h"
 #include "sais_lcp.h"
+#include "sais_util.h"
 
 using namespace std;
 
@@ -88,29 +89,42 @@ int main(int argc, char* argv[]) {
   vector<int> encoded = EncodeAlphabetically(text);
 
   int cell_size = NumDigits(text.size()) + 1;
-  vector<int> indices(n);
-  vector<char> text_chars(n);
-  for (int i = 0; i < n; i++) {
-    indices[i] = i;
-    text_chars[i] = text[i];
-  }
-  PrintVector(indices, "Index: ", cell_size);
-  PrintVector(text_chars, "Text: ", cell_size);
-  PrintVector(encoded, "Vector encoding: ", cell_size);
-
+  
   // quick & dirty
-  // allow_printing = false;
+  bool enable_printing = true;
+
+  if (enable_printing) {
+    vector<int> indices(n);
+    vector<char> text_chars(n);
+    for (int i = 0; i < n; i++) {
+      indices[i] = i;
+      text_chars[i] = text[i];
+    }
+    PrintVector(FindBucketSizes(encoded, alphabet_size), "Bucket sizes: ", cell_size);
+    PrintVector(indices, "Index: ", cell_size);
+    PrintVector(text_chars, "Text: ", cell_size);
+    PrintVector(encoded, "Vector encoding: ", cell_size);
+  } else {
+    allow_printing = false;
+    cout.setstate(ios_base::failbit);
+  }
+
   vector<int> suffix_array(n, -1);
   vector<int> lcp_array(n, -1);
   BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
 
-  allow_printing = true;
+  if (enable_printing) {
+    allow_printing = true;
+    cout.clear();
+  }
+
   PrintVector(suffix_array, "Suffix array:    ", cell_size);
   PrintVector(lcp_array, "LCP array:       ", cell_size);
   vector<int> correct_lcp(n);
   SuffixArrayToLCP(encoded, suffix_array, &correct_lcp);
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
   
+  cout.clear();
   if (lcp_array == correct_lcp) {
     cout << "LCP is OK" << endl;
   } else {

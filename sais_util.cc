@@ -1,5 +1,6 @@
 #include "sais_util.h"
 
+#include <climits>
 #include <vector>
 
 using namespace std;
@@ -43,30 +44,24 @@ vector<int> FindBucketSizes(const vector<int> &text, int alphabet_size) {
   return result;
 }
 
-vector<int> FindBucketHeads(const vector<int> &bucket_sizes) {
+void FindBucketHeads(const vector<int> &bucket_sizes, vector<int> *bucket_heads) {
   int n = bucket_sizes.size();
-  vector<int> tails(n);
 
   int offset = 1;
   for (int i = 0; i < n; i++) {
-    tails[i] = offset;
+    (*bucket_heads)[i] = offset;
     offset += bucket_sizes[i];
   }
-
-  return tails;
 }
 
-vector<int> FindBucketTails(const vector<int> &bucket_sizes) {
+void FindBucketTails(const vector<int> &bucket_sizes, vector<int> *bucket_tails) {
   int n = bucket_sizes.size();
-  vector<int> tails(n);
 
   int offset = 1;
   for (int i = 0; i < n; i++) {
     offset += bucket_sizes[i];
-    tails[i] = offset - 1;
+    (*bucket_tails)[i] = offset - 1;
   }
-
-  return tails;
 }
 
 bool IsLMSChar(int offset, const vector<char> &typemap) {
@@ -81,8 +76,8 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 
   int i = 0;
   while (true) {
-    bool is_a_lms = IsLMSChar(i + offset_a, typemap);
-    bool is_b_lms = IsLMSChar(i + offset_b, typemap);
+    bool is_a_lms = IsLMSChar(offset_a + i, typemap);
+    bool is_b_lms = IsLMSChar(offset_b + i, typemap);
 
     // if we found our way to the next LMS substring
     // then there's no difference between the original
@@ -90,7 +85,7 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
     if (i > 0 && is_a_lms && is_b_lms) return true;
 
     if (is_a_lms != is_b_lms) return false;
-    if (text[i + offset_a] != text[i + offset_b]) return false;
+    if (text[offset_a + i] != text[offset_b + i]) return false;
 
     i++;
   }
@@ -113,4 +108,14 @@ int count_same_chars(const vector<int> &text, int first_pos_in_text,
     second_pos_in_text++;
   }
   return num_same_chars;
+}
+
+int FindMinInRange(const vector<int> array, int start_index, int end_index) {
+  int min = INT_MAX;
+  for (int i = start_index; i <= end_index; i++) {
+    if (array[i] != -1 && array[i] < min) {
+      min = array[i];
+    }
+  }
+  return min;
 }

@@ -12,9 +12,10 @@ std::vector<char> BuildTypeMap(const std::vector<int> &text);
 std::vector<int> FindBucketSizes(const std::vector<int> &text,
                                  int alphabet_size);
 
-std::vector<int> FindBucketHeads(const std::vector<int> &bucket_sizes);
-
-std::vector<int> FindBucketTails(const std::vector<int> &bucket_sizes);
+void FindBucketHeads(const std::vector<int> &bucket_sizes,
+                     std::vector<int> *bucket_heads);
+void FindBucketTails(const std::vector<int> &bucket_sizes,
+                     std::vector<int> *bucket_tails);
 
 bool IsLMSChar(int offset, const std::vector<char> &typemap);
 
@@ -24,5 +25,8 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 
 int count_same_chars(const std::vector<int> &text, int first_pos_in_text,
                      int second_pos_in_text);
+
+int FindMinInRange(const std::vector<int> array, int start_index,
+                   int end_index);
 
 #endif
