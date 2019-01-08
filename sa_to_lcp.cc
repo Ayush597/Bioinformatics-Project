@@ -87,8 +87,35 @@ void RankSAToLCP(const vector<int> &text, const vector<int> &suffix_array,
   (*lcp_array)[0] = 0;
 }
 
+void ComputeLCPArray(const vector<int> &text, const vector<int> &SA,
+                     vector<int> *lcp_array) {
+  int n = SA.size();
+  vector<int> rank(n);
+
+  for (int i = 0; i < n; i++) rank[SA[i]] = i;
+
+  int lcp = 0;
+
+  for (int i = 0; i < n; i++) {
+    if (rank[i] > 0) {
+      int j = SA[rank[i] - 1];
+      while (true) {
+        if (i + lcp == n - 1 || j + lcp == n - 1 || text[i + lcp] != text[j + lcp]) {
+          break;
+        }
+        lcp++;
+      }
+      (*lcp_array)[rank[i]] = lcp;
+      if (lcp > 0) lcp--;
+    }
+  }
+
+  (*lcp_array)[0] = 0;
+}
+
 void SuffixArrayToLCP(const vector<int> &text, const vector<int> &suffix_array,
                       vector<int> *lcp_array) {
   // RankSAToLCP(text, suffix_array, lcp_array);
-  KasaiSAToLCP(text, suffix_array, lcp_array);
+  // KasaiSAToLCP(text, suffix_array, lcp_array);
+  ComputeLCPArray(text, suffix_array, lcp_array);
 }

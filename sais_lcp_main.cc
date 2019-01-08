@@ -34,7 +34,8 @@ vector<int> EncodeAlphabetically(const string& text) {
   return encoded;
 }
 
-vector<int> EncodeByLexicographicalOrder(const string& text, int alphabet_size=256) {
+vector<int> EncodeByLexicographicalOrder(const string& text,
+                                         int alphabet_size = 256) {
   int n = text.length();
   vector<int> encoded(n);
 
@@ -89,7 +90,7 @@ int main(int argc, char* argv[]) {
   vector<int> encoded = EncodeAlphabetically(text);
 
   int cell_size = NumDigits(text.size()) + 1;
-  
+
   // quick & dirty
   bool enable_printing = true;
 
@@ -100,7 +101,10 @@ int main(int argc, char* argv[]) {
       indices[i] = i;
       text_chars[i] = text[i];
     }
-    PrintVector(FindBucketSizes(encoded, alphabet_size), "Bucket sizes: ", cell_size);
+    PrintVector(FindBucketSizes(encoded, alphabet_size),
+                "Bucket sizes: ", cell_size);
+    PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
+                         FindBucketSizes(encoded, alphabet_size)), "L/S seams: ");
     PrintVector(indices, "Index: ", cell_size);
     PrintVector(text_chars, "Text: ", cell_size);
     PrintVector(encoded, "Vector encoding: ", cell_size);
@@ -123,7 +127,7 @@ int main(int argc, char* argv[]) {
   vector<int> correct_lcp(n);
   SuffixArrayToLCP(encoded, suffix_array, &correct_lcp);
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
-  
+
   cout.clear();
   if (lcp_array == correct_lcp) {
     cout << "LCP is OK" << endl;

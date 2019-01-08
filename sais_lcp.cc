@@ -24,7 +24,8 @@ void GuessLMSSort(const vector<int> &text, const vector<char> &type_map,
 
 void InduceSortL(const vector<int> &text, const vector<char> &typemap,
                  vector<int> *bucket_heads, vector<int> *suffix_array,
-                 vector<int> *lcp_array = NULL, vector<int> *first_lms = NULL) {
+                 vector<int> *lcp_array = NULL, vector<int> *first_lms = NULL,
+                 vector<int> *ls_seam = NULL) {
   int n = suffix_array->size();
   int m = (*bucket_heads).size();
 
@@ -48,6 +49,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
     if (typemap[j] != kLType) continue;
 
     int c = text[j];
+
     int k = (*bucket_heads)[c];
     (*suffix_array)[k] = j;
     last_l_suffix[c] = k;
@@ -60,18 +62,42 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
     // PrintVector((*suffix_array), "SA: ");
     // PrintVector((*lcp_array), "LCP: ");
 
+    if (k + 1 == (*ls_seam)[c]) {
+      int pos_of_first_lms_suffix = (*first_lms)[c];
+      if (pos_of_first_lms_suffix != -1) {
+        int ls_seam_same_chars = count_same_chars(
+            text, (*suffix_array)[k], (*suffix_array)[pos_of_first_lms_suffix]);
+        (*lcp_array)[pos_of_first_lms_suffix] = ls_seam_same_chars;
+      }
+    }
+
+    // if (i > 0) {
+    //   int sa_i = (*suffix_array)[i];
+    //   int text_sa_i = text[sa_i];
+    //   int pos_of_first_lms = (*first_lms)[text_sa_i];
+    //   if (pos_of_first_lms == i) {
+    //     int pos_of_last_l_suffix = last_l_suffix[text_sa_i];
+    //     if (pos_of_last_l_suffix != -1) {
+    //       int ls_seam_same_chars =
+    //           count_same_chars(text, (*suffix_array)[pos_of_last_l_suffix],
+    //                            (*suffix_array)[pos_of_first_lms]);
+    //       (*lcp_array)[pos_of_first_lms] = ls_seam_same_chars;
+    //     }
+    //   }
+    // }
+
     iteration[k] = i;
 
     if (is_first_in_bucket[k]) {
       (*lcp_array)[k] = 0;
     }
 
-    int pos_of_first_lms = (*first_lms)[c];
-    if (pos_of_first_lms != -1) {
-      int ls_seam_same_chars = count_same_chars(
-          text, (*suffix_array)[k], (*suffix_array)[pos_of_first_lms]);
-      (*lcp_array)[pos_of_first_lms] = ls_seam_same_chars;
-    }
+    // int pos_of_first_lms = (*first_lms)[c];
+    // if (pos_of_first_lms != -1) {
+    //   int ls_seam_same_chars = count_same_chars(
+    //       text, (*suffix_array)[k], (*suffix_array)[pos_of_first_lms]);
+    //   (*lcp_array)[pos_of_first_lms] = ls_seam_same_chars;
+    // }
 
     if (is_first_in_bucket[k]) {
       continue;
@@ -92,7 +118,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
   }
 
   // if (lcp_array != NULL) {
-  //   for (int i = 0, m = bucket_sizes.size(); i < m; i++) {
+  //   for (int i = 0; i < m; i++) {
   //     int pos_of_last_l_suffix = last_l_suffix[i];
   //     int pos_of_first_lms_suffix = (*first_lms)[i];
   //     if (pos_of_last_l_suffix != -1 && pos_of_first_lms_suffix != -1) {
@@ -107,8 +133,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
 
 void InduceSortS(const vector<int> &text, const vector<char> &typemap,
                  vector<int> *bucket_tails, vector<int> *suffix_array,
-                 vector<int> *lcp_array = NULL,
-                 vector<int> *bucket_heads = NULL) {
+                 vector<int> *lcp_array = NULL, vector<int> *ls_seam = NULL) {
   int n = suffix_array->size();
   int m = (*bucket_tails).size();
 
@@ -143,10 +168,17 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
       (*lcp_array)[k] = 0;
     }
 
-    if ((k - 1 >= 0 && typemap[(*suffix_array)[k - 1]] == kLType) ||
-        k == (*bucket_heads)[c]) {
-      int ls_seam_same_chars =
-          count_same_chars(text, (*suffix_array)[k - 1], (*suffix_array)[k]);
+    // if ((k - 1 >= 0 && typemap[(*suffix_array)[k - 1]] == kLType) ||
+    //     k == (*bucket_heads)[c]) {
+    // if (k - 1 >= 0 && k == (*bucket_heads)[c]) {
+    //   int ls_seam_same_chars =
+    //       count_same_chars(text, (*suffix_array)[k - 1], (*suffix_array)[k]);
+    //   (*lcp_array)[k] = ls_seam_same_chars;
+    // }
+
+    if (k == (*ls_seam)[c]) {
+      int ls_seam_same_chars = count_same_chars(
+          text, (*suffix_array)[k - 1], (*suffix_array)[k]);
       (*lcp_array)[k] = ls_seam_same_chars;
     }
 
@@ -364,6 +396,7 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   PrintVector(lms_lcp_values, "LMS LCP: ", cell_size, debug_depth);
 
   fill((*suffix_array).begin(), (*suffix_array).end(), -1);
+  fill((*lcp_array).begin(), (*lcp_array).end(), -1);
   FindBucketHeads(bucket_sizes, &bucket_heads);
   FindBucketTails(bucket_sizes, &bucket_tails);
 
@@ -376,16 +409,18 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   PrintVector(*suffix_array, "Accurate SA: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "Accurate LCP: ", cell_size, debug_depth);
 
+  vector<int> ls_seam = FindSeam(text, typemap, bucket_sizes);
+
   cout << endl;
-  InduceSortL(text, typemap, &bucket_heads, suffix_array, lcp_array,
-              &first_lms);
+  InduceSortL(text, typemap, &bucket_heads, suffix_array, lcp_array, &first_lms,
+              &ls_seam);
   PrintVector(*suffix_array, "Acc after L: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "LCP after L: ", cell_size, debug_depth);
 
   FindBucketTails(bucket_sizes, &bucket_tails);
 
   cout << endl;
-  InduceSortS(text, typemap, &bucket_tails, suffix_array, lcp_array, &bucket_heads);
+  InduceSortS(text, typemap, &bucket_tails, suffix_array, lcp_array, &ls_seam);
   PrintVector(*suffix_array, "Acc after S: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "LCP after S: ", cell_size, debug_depth);
   cout << endl;

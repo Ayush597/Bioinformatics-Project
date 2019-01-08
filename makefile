@@ -3,19 +3,22 @@ CXXFLAGS = -Wall -std=c++11 -g
 
 SAIS_LCP_FILE_NAME = sais_lcp
 SAIS_LCP_MAIN_NAME_EXTENSION = _main
-SAIS_LCP_MAIN_FILE_NAME := $(SAIS_LCP_FILE_NAME)$(SAIS_LCP_MAIN_NAME_EXTENSION)
+SAIS_LCP_MAIN_FILE_NAME = $(SAIS_LCP_FILE_NAME)$(SAIS_LCP_MAIN_NAME_EXTENSION)
+TEST_FILE_NAME = test
 
 ifeq ($(OS),Windows_NT)
     PROGRAM_OUT := program.exe
 	SAIS_LCP_MAIN_OUT := $(SAIS_LCP_MAIN_FILE_NAME).exe
+	TEST_OUT := $(TEST_FILE_NAME).exe
 	RM := del
 else
     PROGRAM_OUT := program.out
 	SAIS_LCP_MAIN_OUT := $(SAIS_LCP_MAIN_FILE_NAME).out
+	TEST_OUT := $(TEST_FILE_NAME).out
 	RM := rm
 endif
 
-all: $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT)
+all: $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT)
 
 $(PROGRAM_OUT): program.o suffix.o
 	$(CXX) $(CXXFLAGS) -o $(PROGRAM_OUT) program.o suffix.o
@@ -35,6 +38,9 @@ suffix.o: suffix.cc suffix.h
 
 $(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o sais_util.o sa_to_lcp.o
 	$(CXX) $(CXXFLAGS) -o $(SAIS_LCP_MAIN_OUT) $^
+
+$(TEST_OUT): test.o sais_lcp.o sais_util.o sa_to_lcp.o
+	$(CXX) $(CXXFLAGS) -o $(TEST_OUT) $^
 
 sais_lcp_main.o: sais_lcp_main.cc sais_lcp.h sa_to_lcp.h
 	$(CXX) $(CXXFLAGS) -c $*.cc

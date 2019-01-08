@@ -44,7 +44,8 @@ vector<int> FindBucketSizes(const vector<int> &text, int alphabet_size) {
   return result;
 }
 
-void FindBucketHeads(const vector<int> &bucket_sizes, vector<int> *bucket_heads) {
+void FindBucketHeads(const vector<int> &bucket_sizes,
+                     vector<int> *bucket_heads) {
   int n = bucket_sizes.size();
 
   int offset = 1;
@@ -54,7 +55,8 @@ void FindBucketHeads(const vector<int> &bucket_sizes, vector<int> *bucket_heads)
   }
 }
 
-void FindBucketTails(const vector<int> &bucket_sizes, vector<int> *bucket_tails) {
+void FindBucketTails(const vector<int> &bucket_sizes,
+                     vector<int> *bucket_tails) {
   int n = bucket_sizes.size();
 
   int offset = 1;
@@ -62,6 +64,26 @@ void FindBucketTails(const vector<int> &bucket_sizes, vector<int> *bucket_tails)
     offset += bucket_sizes[i];
     (*bucket_tails)[i] = offset - 1;
   }
+}
+
+vector<int> FindSeam(const vector<int> &text, const vector<char> &typemap,
+                     const vector<int> &bucket_sizes) {
+  int m = bucket_sizes.size();
+  vector<int> seam_locations(m, 0);
+
+  for (int i = 0, n = text.size(); i < n; i++) {
+    if (typemap[i] != kLType) continue;
+    int c = text[i];
+    seam_locations[c]++;
+  }
+
+  int sum_bucket_size = 1;
+  for (int i = 0; i < m; i++) {
+    seam_locations[i] += sum_bucket_size;
+    sum_bucket_size += bucket_sizes[i];
+  }
+
+  return seam_locations;
 }
 
 bool IsLMSChar(int offset, const vector<char> &typemap) {
@@ -93,17 +115,17 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 
 int count_same_chars(const vector<int> &text, int first_pos_in_text,
                      int second_pos_in_text) {
-  if ((unsigned int) first_pos_in_text >= text.size() || (unsigned int) second_pos_in_text >= text.size()) {
+  if ((((unsigned int)first_pos_in_text) >= text.size()) ||
+      (((unsigned int)second_pos_in_text) >= text.size())) {
     return 0;
   }
-  
+
   int num_same_chars = 0;
   while (true) {
-    if (text[first_pos_in_text] == text[second_pos_in_text]) {
-      num_same_chars++;
-    } else {
+    if (text[first_pos_in_text] != text[second_pos_in_text]) {
       break;
     }
+    num_same_chars++;
     first_pos_in_text++;
     second_pos_in_text++;
   }

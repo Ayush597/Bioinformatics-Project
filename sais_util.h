@@ -17,6 +17,10 @@ void FindBucketHeads(const std::vector<int> &bucket_sizes,
 void FindBucketTails(const std::vector<int> &bucket_sizes,
                      std::vector<int> *bucket_tails);
 
+std::vector<int> FindSeam(const std::vector<int> &text,
+                          const std::vector<char> &typemap,
+                          const std::vector<int> &bucket_sizes);
+
 bool IsLMSChar(int offset, const std::vector<char> &typemap);
 
 bool LMSSubstringsAreEqual(const std::vector<int> &text,
