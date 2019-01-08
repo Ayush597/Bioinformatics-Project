@@ -14,7 +14,18 @@
 
 using namespace std;
 
-bool allow_printing = true;
+bool test_generation = false;
+bool allow_printing;
+
+void EnablePrinting(bool is_enabled) {
+  if (is_enabled) {
+    allow_printing = true;
+    std::cout.clear();
+  } else {
+    allow_printing = false;
+    std::cout.setstate(std::ios_base::failbit);
+  }
+}
 
 int main(int argc, char* argv[]) {
   if (argc < 4) {
@@ -25,7 +36,7 @@ int main(int argc, char* argv[]) {
 
   int n = stoi(argv[1]);
   int alphabet_size = stoi(argv[2]);
-  allow_printing = stoi(argv[3]);
+  bool enable_printing = stoi(argv[3]);
 
   int cell_size = NumDigits(n) + 1;
 
@@ -38,21 +49,29 @@ int main(int argc, char* argv[]) {
   vector<int> lcp_array(n + 1);
   vector<int> correct_lcp(n + 1);
 
+  EnablePrinting(enable_printing);
+
   vector<int> indices(n);
-  if (allow_printing) {
+  if (enable_printing) {
     for (int i = 0; i < n; i++) {
       indices[i] = i;
     }
-  } else {
-    cout.setstate(ios_base::failbit);
   }
 
   while (true) {
     generate(input.begin(), input.end(), [&]{ return di(dre);});
 
+    if (test_generation) {
+      EnablePrinting(true);
+    }
+
     if (allow_printing) {
       PrintVector(input, "gen input: ", cell_size);
       cin.get();
+    }
+
+    if (test_generation && !enable_printing) {
+      EnablePrinting(false);
     }
 
     fill(suffix_array.begin(), suffix_array.end(), -1);
@@ -67,18 +86,22 @@ int main(int argc, char* argv[]) {
 
     SuffixArrayToLCP(input, suffix_array, &correct_lcp);
 
-    if (lcp_array != correct_lcp) {
-      allow_printing = true;
-      cout.clear();
+    if (lcp_array != correct_lcp || test_generation) {
+      EnablePrinting(true);
     }
 
     PrintVector(suffix_array, "Suffix array:    ", cell_size);
     PrintVector(lcp_array, "LCP array:       ", cell_size);
     PrintVector(correct_lcp, "LCP should be: ", cell_size);
-      
+    cout << endl;
+
     if (lcp_array != correct_lcp) {
       PrintVector(input, "Found wrong LCP for input: ", cell_size);
       return 1;
+    }
+
+    if (test_generation && !enable_printing) {
+      EnablePrinting(false);
     }
   }
 }

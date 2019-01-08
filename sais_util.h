@@ -27,7 +27,7 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            const std::vector<char> &typemap, int offset_a,
                            int offset_b);
 
-int count_same_chars(const std::vector<int> &text, int first_pos_in_text,
+int CountSameChars(const std::vector<int> &text, int first_pos_in_text,
                      int second_pos_in_text);
 
 int FindMinInRange(const std::vector<int> array, int start_index,

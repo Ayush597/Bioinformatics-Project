@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "sais_lcp.h"
-
 using namespace std;
 
 // To construct and return LCP using Kasai's algorithm in O(n)

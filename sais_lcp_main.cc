@@ -65,22 +65,25 @@ vector<int> EncodeByLexicographicalOrder(const string& text,
 }
 
 int main(int argc, char* argv[]) {
-  int alphabet_size;
+  bool enable_printing = true;
+  int alphabet_size = 256;
   // Check the number of parameters
   if (argc < 2) {
     // Tell the user how to run the program
-    cerr << "Usage: " << argv[0] << " DATA_PATH ALPHABET_SIZE" << endl
+    cerr << "Usage: " << argv[0] << " DATA_PATH ENABLE_PRINTING ALPHABET_SIZE" << endl
          << "\tDATA_PATH - path to a .txt file containing a single line of text"
-         << endl
+         << endl << "\tENABLE_PRINTING - if steps should be printed"
          << "\tALPHABET_SIZE - (optional) size of the alphabet";
     /* "Usage messages" are a conventional way of telling the user
      * how to run a program if they enter the command incorrectly.
      */
     return 1;
-  } else if (argc < 3) {
-    alphabet_size = 256;
-  } else {
-    alphabet_size = stoi(argv[2]);
+  } else if (argc == 3) {
+    if (stoi(argv[2]) == 0) {
+      enable_printing = false;
+    }
+  } else if (argc == 4) {
+    alphabet_size = stoi(argv[3]);
   }
 
   string filename = argv[1];
@@ -92,7 +95,6 @@ int main(int argc, char* argv[]) {
   int cell_size = NumDigits(text.size()) + 1;
 
   // quick & dirty
-  bool enable_printing = true;
 
   if (enable_printing) {
     vector<int> indices(n);
@@ -101,10 +103,10 @@ int main(int argc, char* argv[]) {
       indices[i] = i;
       text_chars[i] = text[i];
     }
-    PrintVector(FindBucketSizes(encoded, alphabet_size),
-                "Bucket sizes: ", cell_size);
-    PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
-                         FindBucketSizes(encoded, alphabet_size)), "L/S seams: ");
+    // PrintVector(FindBucketSizes(encoded, alphabet_size),
+    //             "Bucket sizes: ", cell_size);
+    // PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
+    //                      FindBucketSizes(encoded, alphabet_size)), "L/S seams: ");
     PrintVector(indices, "Index: ", cell_size);
     PrintVector(text_chars, "Text: ", cell_size);
     PrintVector(encoded, "Vector encoding: ", cell_size);

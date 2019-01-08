@@ -65,7 +65,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
     if (k + 1 == (*ls_seam)[c]) {
       int pos_of_first_lms_suffix = (*first_lms)[c];
       if (pos_of_first_lms_suffix != -1) {
-        int ls_seam_same_chars = count_same_chars(
+        int ls_seam_same_chars = CountSameChars(
             text, (*suffix_array)[k], (*suffix_array)[pos_of_first_lms_suffix]);
         (*lcp_array)[pos_of_first_lms_suffix] = ls_seam_same_chars;
       }
@@ -79,7 +79,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
     //     int pos_of_last_l_suffix = last_l_suffix[text_sa_i];
     //     if (pos_of_last_l_suffix != -1) {
     //       int ls_seam_same_chars =
-    //           count_same_chars(text, (*suffix_array)[pos_of_last_l_suffix],
+    //           CountSameChars(text, (*suffix_array)[pos_of_last_l_suffix],
     //                            (*suffix_array)[pos_of_first_lms]);
     //       (*lcp_array)[pos_of_first_lms] = ls_seam_same_chars;
     //     }
@@ -94,7 +94,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
 
     // int pos_of_first_lms = (*first_lms)[c];
     // if (pos_of_first_lms != -1) {
-    //   int ls_seam_same_chars = count_same_chars(
+    //   int ls_seam_same_chars = CountSameChars(
     //       text, (*suffix_array)[k], (*suffix_array)[pos_of_first_lms]);
     //   (*lcp_array)[pos_of_first_lms] = ls_seam_same_chars;
     // }
@@ -123,7 +123,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
   //     int pos_of_first_lms_suffix = (*first_lms)[i];
   //     if (pos_of_last_l_suffix != -1 && pos_of_first_lms_suffix != -1) {
   //       int ls_seam_same_chars =
-  //           count_same_chars(text, (*suffix_array)[pos_of_last_l_suffix],
+  //           CountSameChars(text, (*suffix_array)[pos_of_last_l_suffix],
   //                           (*suffix_array)[pos_of_first_lms_suffix]);
   //       (*lcp_array)[pos_of_first_lms_suffix] = ls_seam_same_chars;
   //     }
@@ -172,12 +172,12 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
     //     k == (*bucket_heads)[c]) {
     // if (k - 1 >= 0 && k == (*bucket_heads)[c]) {
     //   int ls_seam_same_chars =
-    //       count_same_chars(text, (*suffix_array)[k - 1], (*suffix_array)[k]);
+    //       CountSameChars(text, (*suffix_array)[k - 1], (*suffix_array)[k]);
     //   (*lcp_array)[k] = ls_seam_same_chars;
     // }
 
     if (k == (*ls_seam)[c]) {
-      int ls_seam_same_chars = count_same_chars(
+      int ls_seam_same_chars = CountSameChars(
           text, (*suffix_array)[k - 1], (*suffix_array)[k]);
       (*lcp_array)[k] = ls_seam_same_chars;
     }
@@ -300,7 +300,7 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
     int second_pos_in_text = summary_suffix_offsets[j] + common_lsm_sum;
 
     int num_same_chars_after_lsm =
-        count_same_chars(text, first_pos_in_text, second_pos_in_text);
+        CountSameChars(text, first_pos_in_text, second_pos_in_text);
 
     lms_lcp_values[k] = common_lsm_sum + num_same_chars_after_lsm;
     // lms_lcp_values[k] = 0;
