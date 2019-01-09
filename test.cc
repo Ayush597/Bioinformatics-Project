@@ -45,7 +45,9 @@ int main(int argc, char* argv[]) {
   std::uniform_int_distribution<int> di(0, alphabet_size - 1);
 
   vector<int> input(n);
+  vector<char> text_chars(n + 1);
   vector<int> suffix_array(n + 1);
+  vector<int> correct_sa(n + 1);
   vector<int> lcp_array(n + 1);
   vector<int> correct_lcp(n + 1);
 
@@ -60,6 +62,11 @@ int main(int argc, char* argv[]) {
 
   while (true) {
     generate(input.begin(), input.end(), [&]{ return di(dre);});
+    for (int i = 0; i < n; i++) {
+      text_chars.at(i) = (char )(input.at(i) + 'a');
+    }
+    text_chars.at(n) = 0;
+    PrintVector(text_chars, "Chars: ", cell_size);
 
     if (test_generation) {
       EnablePrinting(true);
@@ -67,7 +74,7 @@ int main(int argc, char* argv[]) {
 
     if (allow_printing) {
       PrintVector(input, "gen input: ", cell_size);
-      cin.get();
+      // cin.get();
     }
 
     if (test_generation && !enable_printing) {
@@ -75,8 +82,9 @@ int main(int argc, char* argv[]) {
     }
 
     fill(suffix_array.begin(), suffix_array.end(), -1);
+    fill(correct_sa.begin(), correct_sa.end(), 0);
     fill(lcp_array.begin(), lcp_array.end(), -1);
-    fill(correct_lcp.begin(), correct_lcp.end(), -1);
+    fill(correct_lcp.begin(), correct_lcp.end(), 0);
 
     PrintVector(FindBucketSizes(input, alphabet_size),
                 "Bucket sizes: ", cell_size);
@@ -84,13 +92,15 @@ int main(int argc, char* argv[]) {
 
     BuildSuffixArray(input, alphabet_size, 0, &suffix_array, &lcp_array);
 
-    SuffixArrayToLCP(input, suffix_array, &correct_lcp);
+    SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
+    // SuffixArrayToLCP(input, suffix_array, &correct_lcp);
 
     if (lcp_array != correct_lcp || test_generation) {
       EnablePrinting(true);
     }
 
     PrintVector(suffix_array, "Suffix array:    ", cell_size);
+    PrintVector(correct_sa, "SA should be: ", cell_size);
     PrintVector(lcp_array, "LCP array:       ", cell_size);
     PrintVector(correct_lcp, "LCP should be: ", cell_size);
     cout << endl;

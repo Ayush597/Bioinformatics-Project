@@ -121,7 +121,8 @@ void SuffixArrayToLCP(const vector<int> &text, const vector<int> &suffix_array,
 }
 
 void SAIS_SA_LCP(const vector<char> &text, vector<int> *suffix_array, vector<int> *lcp_array) {
-  sais((unsigned char *)text.data(), (*suffix_array).data(), (*lcp_array).data(), text.size());
+  int n = text.size();
+  sais((unsigned char *)text.data(), (*suffix_array).data(), (*lcp_array).data(), n);
 }
 
 void SAIS_SA(int alphabet_size, const vector<int> &text, vector<int> *suffix_array) {

@@ -98,12 +98,14 @@ int main(int argc, char* argv[]) {
 
   vector<int> indices(n);
   vector<char> text_chars(n);
+  for (int i = 0; i < n; i++) {
+    if (i < n - 1) {
+      text_chars.at(i) = text.at(i);
+    }
+  }
   if (enable_printing) {
     for (int i = 0; i < n; i++) {
       indices.at(i) = i;
-      if (i < n - 1) {
-        text_chars.at(i) = text.at(i);
-      }
     }
     // PrintVector(FindBucketSizes(encoded, alphabet_size),
     //             "Bucket sizes: ", cell_size);
@@ -122,9 +124,10 @@ int main(int argc, char* argv[]) {
   
   bool is_shit_broke = false;
   try {
-    BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+    // BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+    BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, NULL);
   } catch (...) {
-    cout << "shit is broke yo" << endl;
+    cerr << "shit is broke yo" << endl;
     is_shit_broke = true;
   }
 
@@ -148,9 +151,17 @@ int main(int argc, char* argv[]) {
   }
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
   
-  vector<int> int_sa(n);
-  SAIS_SA(alphabet_size, encoded, &int_sa);
-  PrintVector(int_sa, "int SA: ", cell_size);
+  // vector<int> int_sa(n, 0);
+  // vector<int> encoded_expanded(n);
+  // for (int i = 0; i < n; i++) {
+  //   if (i == n - 1) {
+  //     encoded_expanded.at(i) = 0;
+  //   } else {
+  //     encoded_expanded.at(i) = encoded.at(i) + 1;
+  //   }
+  // }
+  // SAIS_SA(256, encoded_expanded, &int_sa);
+  // PrintVector(int_sa, "int SA: ", cell_size);
 
   cout.clear();
 
