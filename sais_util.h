@@ -9,6 +9,8 @@ extern const char kSStarType;
 
 std::vector<char> BuildTypeMap(const std::vector<int> &text);
 
+std::vector<int> TypeCount(std::vector<char> &typemap);
+
 std::vector<int> FindBucketSizes(const std::vector<int> &text,
                                  int alphabet_size);
 
@@ -28,9 +30,11 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            int offset_b);
 
 int CountSameChars(const std::vector<int> &text, int first_pos_in_text,
-                     int second_pos_in_text);
+                   int second_pos_in_text);
 
-int FindMinInRange(const std::vector<int> array, int start_index,
+int FindMinInRange(const std::vector<int> &array, int start_index,
                    int end_index);
+
+void EncodeSeam(const std::vector<int> &ls_seam, std::vector<char> *typemap);
 
 #endif

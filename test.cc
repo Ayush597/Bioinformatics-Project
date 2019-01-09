@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
   vector<int> indices(n);
   if (enable_printing) {
     for (int i = 0; i < n; i++) {
-      indices[i] = i;
+      indices.at(i) = i;
     }
   }
 

@@ -28,7 +28,7 @@ vector<int> EncodeAlphabetically(const string& text) {
   int min_char = *min_element(begin(text), end(text));
 
   for (int i = 0; i < n; i++) {
-    encoded[i] = text[i] - min_char;
+    encoded.at(i) = text.at(i) - min_char;
   }
 
   return encoded;
@@ -43,14 +43,14 @@ vector<int> EncodeByLexicographicalOrder(const string& text,
 
   // keep track of characters present in input text
   for (int i = 0; i < n; i++) {
-    present_chars[text[i]] = 1;
+    present_chars.at(text.at(i)) = 1;
   }
 
   int current_int_name = 0;
   for (int i = 0, n = present_chars.size(); i < n; i++) {
     // give names only to characters which are used in input text
-    if (present_chars[i] == 1) {
-      present_chars[i] = current_int_name;
+    if (present_chars.at(i) == 1) {
+      present_chars.at(i) = current_int_name;
       current_int_name++;
     }
   }
@@ -58,7 +58,7 @@ vector<int> EncodeByLexicographicalOrder(const string& text,
   // characters are encoded with a number which represents their lexicographical
   // order
   for (int i = 0; i < n; i++) {
-    encoded[i] = present_chars[text[i]];
+    encoded.at(i) = present_chars.at(text.at(i));
   }
 
   return encoded;
@@ -100,8 +100,10 @@ int main(int argc, char* argv[]) {
     vector<int> indices(n);
     vector<char> text_chars(n);
     for (int i = 0; i < n; i++) {
-      indices[i] = i;
-      text_chars[i] = text[i];
+      indices.at(i) = i;
+      if (i < n - 1) {
+        text_chars.at(i) = text.at(i);
+      }
     }
     // PrintVector(FindBucketSizes(encoded, alphabet_size),
     //             "Bucket sizes: ", cell_size);
@@ -117,6 +119,7 @@ int main(int argc, char* argv[]) {
 
   vector<int> suffix_array(n, -1);
   vector<int> lcp_array(n, -1);
+  
   BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
 
   if (enable_printing) {
