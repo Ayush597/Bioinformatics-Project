@@ -8,7 +8,7 @@
 using namespace std;
 
 void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
-                  vector<int> *bucket_tails,
+                  int debug_depth, vector<int> *bucket_tails,
                   vector<int> *suffix_array, vector<char> *debug_type_array) {
   int n = text.size();
   for (int i = 0; i < n; i++) {
@@ -25,7 +25,8 @@ void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
   (*debug_type_array).at(0) = typemap.at(n);
 }
 
-void InduceSortL(const vector<int> &text, const vector<char> &typemap, const vector<int> &ls_seam,
+void InduceSortL(const vector<int> &text, const vector<char> &typemap,
+                 int debug_depth, const vector<int> &ls_seam,
                  vector<int> *bucket_heads, vector<int> *suffix_array,
                  vector<char> *debug_type_array, vector<int> *lcp_array = NULL,
                  vector<int> *first_lms = NULL) {
@@ -76,33 +77,11 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap, const vec
       }
     }
 
-    // if (i > 0) {
-    //   int sa_i = (*suffix_array).at(i);
-    //   int text_sa_i = text.at(sa_i);
-    //   int pos_of_first_lms = (*first_lms).at(text_sa_i);
-    //   if (pos_of_first_lms == i) {
-    //     int pos_of_last_l_suffix = last_l_suffix.at(text_sa_i);
-    //     if (pos_of_last_l_suffix != -1) {
-    //       int ls_seam_same_chars =
-    //           CountSameChars(text, (*suffix_array).at(pos_of_last_l_suffix),
-    //                            (*suffix_array).at(pos_of_first_lms));
-    //       (*lcp_array).at(pos_of_first_lms) = ls_seam_same_chars;
-    //     }
-    //   }
-    // }
-
     iteration.at(k) = i;
 
     if (is_first_in_bucket.at(k)) {
       (*lcp_array).at(k) = 0;
     }
-
-    // int pos_of_first_lms = (*first_lms).at(c);
-    // if (pos_of_first_lms != -1) {
-    //   int ls_seam_same_chars = CountSameChars(
-    //       text, (*suffix_array).at(k), (*suffix_array).at(pos_of_first_lms));
-    //   (*lcp_array).at(pos_of_first_lms) = ls_seam_same_chars;
-    // }
 
     if (is_first_in_bucket.at(k)) {
       continue;
@@ -117,29 +96,14 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap, const vec
       continue;
     }
 
-    // (*lcp_array).at(k) = *min_element((*lcp_array).begin() + prev_iter + 1,
-    //                                (*lcp_array).begin() + i + 1) +
-    //                   1;
-
     (*lcp_array).at(k) = FindMinInRange(*lcp_array, prev_iter + 1, i) + 1;
   }
-
-  // if (lcp_array != NULL) {
-  //   for (int i = 0; i < m; i++) {
-  //     int pos_of_last_l_suffix = last_l_suffix.at(i);
-  //     int pos_of_first_lms_suffix = (*first_lms).at(i);
-  //     if (pos_of_last_l_suffix != -1 && pos_of_first_lms_suffix != -1) {
-  //       int ls_seam_same_chars =
-  //           CountSameChars(text, (*suffix_array).at(pos_of_last_l_suffix),
-  //                           (*suffix_array).at(pos_of_first_lms_suffix));
-  //       (*lcp_array).at(pos_of_first_lms_suffix) = ls_seam_same_chars;
-  //     }
-  //   }
-  // }
 }
 
-void InduceSortS(const vector<int> &text, const vector<char> &typemap, const vector<int> &ls_seam,
-                 vector<int> *bucket_tails, vector<int> *suffix_array, vector<char> *debug_type_array,
+void InduceSortS(const vector<int> &text, const vector<char> &typemap,
+                 int debug_depth, const vector<int> &ls_seam,
+                 vector<int> *bucket_tails, vector<int> *suffix_array,
+                 vector<char> *debug_type_array,
                  vector<int> *lcp_array = NULL) {
   int n = suffix_array->size();
   int m = (*bucket_tails).size();
@@ -176,15 +140,6 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap, const vec
       (*lcp_array).at(k) = 0;
     }
 
-    // if ((k - 1 >= 0 && typemap.at((*suffix_array).at(k - 1)) == kLType) ||
-    //     k == (*bucket_heads).at(c)) {
-    // if (k - 1 >= 0 && k == (*bucket_heads).at(c)) {
-    //   int ls_seam_same_chars =
-    //       CountSameChars(text, (*suffix_array).at(k - 1),
-    //       (*suffix_array).at(k));
-    //   (*lcp_array).at(k) = ls_seam_same_chars;
-    // }
-
     if (k > 0 && k == ls_seam.at(c)) {
       int first_pos = (*suffix_array).at(k - 1);
       if (first_pos < 0) {
@@ -208,11 +163,6 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap, const vec
       (*lcp_array).at(k + 1) = 1;
       continue;
     }
-
-    // (*lcp_array).at(k + 1) = *min_element((*lcp_array).begin() + i + 1,
-    //                                    (*lcp_array).begin() + prev_iter + 1)
-    //                                    +
-    //                       1;
 
     (*lcp_array).at(k + 1) = FindMinInRange(*lcp_array, i + 1, prev_iter) + 1;
   }
@@ -321,14 +271,13 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
         CountSameChars(text, first_pos_in_text, second_pos_in_text);
 
     lms_lcp_values.at(k) = common_lsm_sum + num_same_chars_after_lsm;
-    // lms_lcp_values.at(k) = 0;
   }
 
   return lms_lcp_values;
 }
 
 void AccurateLMSSort(const vector<int> &text, const vector<char> &typemap,
-                     const vector<int> &summary_suffix_array,
+                     int debug_depth, const vector<int> &summary_suffix_array,
                      const vector<int> &summary_lcp_array,
                      const vector<int> &summary_suffix_offsets,
                      const vector<int> &lms_lcp_values,
@@ -388,7 +337,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   FindBucketTails(bucket_sizes, &bucket_tails);
   vector<int> ls_seam = FindSeam(text, typemap, bucket_sizes);
 
-  GuessLMSSort(text, typemap, &bucket_tails, suffix_array, &debug_type_array);
+  GuessLMSSort(text, typemap, debug_depth, &bucket_tails, suffix_array,
+               &debug_type_array);
   PrintVector(*suffix_array, "Guessed SA: ", cell_size, debug_depth);
   if (debug_types) {
     EncodeSeam(ls_seam, &debug_type_array);
@@ -401,7 +351,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
     cout << endl;
   }
 
-  InduceSortL(text, typemap, ls_seam, &bucket_heads, suffix_array, &debug_type_array);
+  InduceSortL(text, typemap, debug_depth, ls_seam, &bucket_heads, suffix_array,
+              &debug_type_array);
   PrintVector(*suffix_array, "After L induced: ", cell_size, debug_depth);
   if (debug_types) {
     EncodeSeam(ls_seam, &debug_type_array);
@@ -416,7 +367,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
 
   FindBucketTails(bucket_sizes, &bucket_tails);
 
-  InduceSortS(text, typemap, ls_seam, &bucket_tails, suffix_array, &debug_type_array);
+  InduceSortS(text, typemap, debug_depth, ls_seam, &bucket_tails, suffix_array,
+              &debug_type_array);
   PrintVector(*suffix_array, "After S induced: ", cell_size, debug_depth);
   if (debug_types) {
     EncodeSeam(ls_seam, &debug_type_array);
@@ -454,23 +406,25 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   FindBucketTails(bucket_sizes, &bucket_tails);
 
   vector<int> first_lms(bucket_sizes.size(), -1);
-  AccurateLMSSort(text, typemap, summary_suffix_array, summary_lcp_array,
-                  summary_suffix_offsets, lms_lcp_values, &bucket_tails,
-                  suffix_array, lcp_array, &first_lms);
+  AccurateLMSSort(text, typemap, debug_depth, summary_suffix_array,
+                  summary_lcp_array, summary_suffix_offsets, lms_lcp_values,
+                  &bucket_tails, suffix_array, lcp_array, &first_lms);
 
   cout << endl;
   PrintVector(*suffix_array, "Accurate SA: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "Accurate LCP: ", cell_size, debug_depth);
 
   cout << endl;
-  InduceSortL(text, typemap, ls_seam, &bucket_heads, suffix_array, &debug_type_array, lcp_array, &first_lms);
+  InduceSortL(text, typemap, debug_depth, ls_seam, &bucket_heads, suffix_array,
+              &debug_type_array, lcp_array, &first_lms);
   PrintVector(*suffix_array, "Acc after L: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "LCP after L: ", cell_size, debug_depth);
 
   FindBucketTails(bucket_sizes, &bucket_tails);
 
   cout << endl;
-  InduceSortS(text, typemap, ls_seam, &bucket_tails, suffix_array, &debug_type_array, lcp_array);
+  InduceSortS(text, typemap, debug_depth, ls_seam, &bucket_tails, suffix_array,
+              &debug_type_array, lcp_array);
   PrintVector(*suffix_array, "Acc after S: ", cell_size, debug_depth);
   PrintVector(*lcp_array, "LCP after S: ", cell_size, debug_depth);
   cout << endl;

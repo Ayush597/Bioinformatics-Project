@@ -96,9 +96,9 @@ int main(int argc, char* argv[]) {
 
   // quick & dirty
 
+  vector<int> indices(n);
+  vector<char> text_chars(n);
   if (enable_printing) {
-    vector<int> indices(n);
-    vector<char> text_chars(n);
     for (int i = 0; i < n; i++) {
       indices.at(i) = i;
       if (i < n - 1) {
@@ -120,20 +120,48 @@ int main(int argc, char* argv[]) {
   vector<int> suffix_array(n, -1);
   vector<int> lcp_array(n, -1);
   
-  BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+  bool is_shit_broke = false;
+  try {
+    BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+  } catch (...) {
+    cout << "shit is broke yo" << endl;
+    is_shit_broke = true;
+  }
 
   if (enable_printing) {
     allow_printing = true;
     cout.clear();
   }
 
-  PrintVector(suffix_array, "Suffix array:    ", cell_size);
-  PrintVector(lcp_array, "LCP array:       ", cell_size);
+  vector<int> correct_sa(n);
   vector<int> correct_lcp(n);
-  SuffixArrayToLCP(encoded, suffix_array, &correct_lcp);
+  SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
+  vector<int> correct_rank_lcp(n);
+  if (!is_shit_broke) {
+    SuffixArrayToLCP(encoded, suffix_array, &correct_rank_lcp);
+    PrintVector(suffix_array, "Suffix array: ", cell_size);
+  }
+  PrintVector(correct_sa, "SA should be: ", cell_size);
+  if (!is_shit_broke) {
+    PrintVector(lcp_array, "LCP array: ", cell_size);
+    PrintVector(correct_rank_lcp, "LCP rank: ", cell_size);
+  }
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
+  
+  vector<int> int_sa(n);
+  SAIS_SA(alphabet_size, encoded, &int_sa);
+  PrintVector(int_sa, "int SA: ", cell_size);
 
   cout.clear();
+
+  if (correct_rank_lcp != correct_lcp) {
+    cout << "Rank is wrong" << endl;
+  }
+
+  if (suffix_array != correct_sa) {
+    cout << "Wrong SA!" << endl;
+  }
+
   if (lcp_array == correct_lcp) {
     cout << "LCP is OK" << endl;
   } else {

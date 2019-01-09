@@ -36,13 +36,13 @@ suffix.o: suffix.cc suffix.h
 # $+: similar to $^, but includes duplicates.
 # $?: the names of all prerequisites that are newer than the target, separated by spaces.
 
-$(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o sa_to_lcp.o sais_util.o
+$(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o sa_to_lcp.o sais_util.o sais.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(SAIS_LCP_MAIN_FILE_NAME).o: sais_lcp_main.cc sais_lcp.h sa_to_lcp.h sais_util.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
-$(TEST_OUT): test.o sais_lcp.o sa_to_lcp.o sais_util.o
+$(TEST_OUT): test.o sais_lcp.o sa_to_lcp.o sais_util.o sais.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(TEST_FILE_NAME).o: test.cc sais_lcp.h sa_to_lcp.h sais_util.h
@@ -54,9 +54,12 @@ sais_lcp.o: sais_lcp.cc sais_lcp.h sais_util.h sa_to_lcp.h
 sais_util.o: sais_util.cc sais_util.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
-sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h
+sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h sais.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
+
+sais.o: sais.c sais.h
+	$(CXX) $(CXXFLAGS) -c $*.c
 
 clean:
 	$(RM) $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) program.o suffix.o \
-			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o
+			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o

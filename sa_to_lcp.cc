@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "sais.h"
+
 using namespace std;
 
 // To construct and return LCP using Kasai's algorithm in O(n)
@@ -116,4 +118,12 @@ void SuffixArrayToLCP(const vector<int> &text, const vector<int> &suffix_array,
   // RankSAToLCP(text, suffix_array, lcp_array);
   // KasaiSAToLCP(text, suffix_array, lcp_array);
   ComputeLCPArray(text, suffix_array, lcp_array);
+}
+
+void SAIS_SA_LCP(const vector<char> &text, vector<int> *suffix_array, vector<int> *lcp_array) {
+  sais((unsigned char *)text.data(), (*suffix_array).data(), (*lcp_array).data(), text.size());
+}
+
+void SAIS_SA(int alphabet_size, const vector<int> &text, vector<int> *suffix_array) {
+  sais_int(text.data(), (*suffix_array).data(), text.size(), alphabet_size);
 }
