@@ -18,7 +18,7 @@ else
 	RM := rm
 endif
 
-all: $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT)
+all: $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) stud_main.exe
 
 $(PROGRAM_OUT): program.o suffix.o
 	$(CXX) $(CXXFLAGS) -o $(PROGRAM_OUT) program.o suffix.o
@@ -60,6 +60,16 @@ sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h sais.h
 sais.o: sais.c sais.h
 	$(CXX) $(CXXFLAGS) -c $*.c
 
+stud_main.exe: stud_sais_lcp_original.o stud_main.o stud_sais.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+stud_sais.o: stud_sais.cc stud_sais.h
+	$(CXX) $(CXXFLAGS) -c $*.cc
+
+stud_sais_lcp_original.o: stud_sais_lcp_original.cc stud_sais_lcp_original.h
+	$(CXX) $(CXXFLAGS) -c $*.cc
+
 clean:
 	$(RM) $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) program.o suffix.o \
-			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o
+			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o \
+			stud_main.exe stud_sais.o

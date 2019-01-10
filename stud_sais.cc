@@ -1,10 +1,60 @@
-#include "sais_stud.h"
+#include "stud_sais.h"
+
+#include <iostream>
+#include <string>
+#include <vector>
 
 unsigned char mask[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 #define tget(i) ( (t[(i)/8]&mask[(i)%8]) ? 1 : 0 )
 #define tset(i, b) t[(i)/8]=(b) ? (mask[(i)%8]|t[(i)/8]) : ((~mask[(i)%8])&t[(i)/8])
 #define chr(i) (cs==sizeof(int)?((int*)s)[i]:((unsigned char *)s)[i])
 #define isLMS(i) (i>0 && tget(i) && !tget(i-1))
+
+template <typename T>
+int NumDigits(T number) {
+  if (std::is_same<T, char>::value) {
+    return 1;
+  }
+  int digits = 0;
+  if (number <= 0) digits = 1;
+  while (number) {
+    number /= 10;
+    digits++;
+  }
+  return digits;
+}
+
+bool allow_printing = true;
+
+template <typename T>
+void PrintVector(const std::vector<T> &v, const std::string &name = "",
+                 int cell_size = 0, int depth = 0) {
+  if (!allow_printing) {
+    return;
+  }
+  for (int i = 0; i < depth; i++) {
+    std::cout << "   ";
+  }
+  std::cout << name;
+  int padding = 20 - name.length();
+  for (int i = 0; i < padding; i++) {
+    std::cout << ' ';
+  }
+  for (auto i = v.begin(); i != v.end(); ++i) {
+    int number_padding = cell_size - NumDigits(*i);
+    for (int i = 0; i < number_padding; i++) {
+      std::cout << ' ';
+    }
+    std::cout << *i << "  ";
+  }
+  std::cout << std::endl;
+}
+
+template <typename T>
+void PrintValues(T *arr, int size) {
+	std::vector<T> temp(arr, arr + size);
+	PrintVector(temp, "", 4);
+}
 
 static void getCounts(const void *s, int *counts, int n, int K, int cs) {
 	int i;
@@ -28,12 +78,16 @@ void induceSA(const unsigned char *t, int *SA, const void *s, const int *counts,
 		if (j >= 0 && !tget(j)) SA[bkt[chr(j)]++] = j;
 	}
 
+	PrintValues(SA, n);
+
 	// Induce S-type
 	getBuckets(counts, bkt, K, true); // find ends of buckets
 	for (i = n - 1; i >= 0; i--) {
 		j = SA[i] - 1;
 		if (j >= 0 && tget(j)) SA[--bkt[chr(j)]] = j;
 	}
+
+	PrintValues(SA, n);
 }
 
 int findMinima(int *LCP, int first, int last)
@@ -155,7 +209,6 @@ void induceSaLcp(const unsigned char *t, int *SA, int *LCP, const void *s, const
 	free(st);
 }
 
-
 void SA_LCP_IS(const void *s, int *SA, int *LCP, int n, int K, int cs, bool level0) {
 	int i, j;
 	unsigned char *t = (unsigned char *)malloc(n / 8 + 1);
@@ -174,6 +227,8 @@ void SA_LCP_IS(const void *s, int *SA, int *LCP, int n, int K, int cs, bool leve
 	for (i = 1; i < n; i++)
 		if (isLMS(i)) SA[--bkt[chr(i)]] = i;
 
+	PrintValues(SA, n);
+
 	induceSA(t, SA, s, counts, bkt, n, K, cs);
 
 	free(bkt);
@@ -189,15 +244,16 @@ void SA_LCP_IS(const void *s, int *SA, int *LCP, int n, int K, int cs, bool leve
 	int name = 0, prev = -1;
 	for (i = 0; i < n1; i++) {
 		int pos = SA[i]; bool diff = false;
-		for (int d = 0; d < n; d++)
+		for (int d = 0; d < n; d++) {
 			if (prev == -1 || chr(pos + d) != chr(prev + d) || tget(pos + d) != tget(prev + d))
 			{
 				diff = true; break;
 			}
 			else if (d>0 && (isLMS(pos + d) || isLMS(prev + d))) break;
-			if (diff) { name++; prev = pos; }
-			pos = (pos % 2 == 0) ? pos / 2 : (pos - 1) / 2;
-			SA[n1 + pos] = name - 1;
+		}
+		if (diff) { name++; prev = pos; }
+		pos = (pos % 2 == 0) ? pos / 2 : (pos - 1) / 2;
+		SA[n1 + pos] = name - 1;
 	}
 	for (i = n - 1, j = n - 1; i >= n1; i--)
 		if (SA[i] >= 0) SA[j--] = SA[i];

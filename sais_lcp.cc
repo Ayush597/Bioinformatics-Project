@@ -9,11 +9,11 @@
 using namespace std;
 
 void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
-                  int debug_depth, vector<int> *bucket_tails,
+                  int cell_size, int debug_depth, vector<int> *bucket_tails,
                   vector<int> *suffix_array, vector<char> *debug_type_array,
                   vector<int> *debug_input_array) {
   int n = text.size();
-  for (int i = 1; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     // not the start of an LMS suffix
     if (!(IsLMSChar(i, typemap))) continue;
 
@@ -23,6 +23,11 @@ void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
     (*debug_input_array).at(k) = text.at((*suffix_array).at(k));
     (*debug_type_array).at(k) = typemap.at(i);
     (*bucket_tails).at(c) -= 1;
+
+    // if (debug_depth == 1) {
+    //   cout << i << " at " << k << endl;
+    //   PrintVector((*suffix_array), "", cell_size, debug_depth);
+    // }
   }
 
   (*suffix_array).at(0) = n;
@@ -33,7 +38,7 @@ void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
 }
 
 void InduceSortL(const vector<int> &text, const vector<char> &typemap,
-                 int debug_depth, const vector<int> &ls_seam,
+                 int cell_size, int debug_depth, const vector<int> &ls_seam,
                  vector<int> *bucket_heads, vector<int> *suffix_array,
                  vector<char> *debug_type_array, vector<int> *debug_input_array,
                  vector<int> *lcp_array = NULL, vector<int> *first_lms = NULL) {
@@ -116,7 +121,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
 }
 
 void InduceSortS(const vector<int> &text, const vector<char> &typemap,
-                 int debug_depth, const vector<int> &ls_seam,
+                 int cell_size, int debug_depth, const vector<int> &ls_seam,
                  vector<int> *bucket_tails, vector<int> *suffix_array,
                  vector<char> *debug_type_array, vector<int> *debug_input_array,
                  vector<int> *lcp_array = NULL) {
@@ -185,6 +190,53 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
   assert(CheckUnique((*suffix_array)));
 }
 
+// int SummarizeSuffixArray(const std::vector<int> &text,
+//                          const std::vector<int> &suffix_array,
+//                          const std::vector<char> &typemap,
+//                          std::vector<int> *summary_string,
+//                          std::vector<int> *summary_suffix_offsets) {
+//   // this array will store the names of LMS substrings in the positions
+//   // that they appear in the original string
+//   vector<int> lms_names(text.size() + 1, -1);
+
+//   int current_name = 0;
+//   int last_lms_suffix_offset = suffix_array.at(0);
+
+//   // the first LMS substring is always the empty string
+//   lms_names.at(suffix_array.at(0)) = current_name;
+
+//   for (int i = 1, n = suffix_array.size(); i < n; i++) {
+//     // where does this suffix appear in the original string?
+//     int suffix_offset = suffix_array.at(i);
+
+//     if (!(IsLMSChar(suffix_offset, typemap))) continue;
+
+//     // if this LMS suffix starts with a different LMS substring from the last
+//     // one, then it gets a new name
+//     if (!LMSSubstringsAreEqual(text, typemap, last_lms_suffix_offset,
+//                                suffix_offset)) {
+//       current_name++;
+//     }
+
+//     // record the last LMS suffix we looked at
+//     last_lms_suffix_offset = suffix_offset;
+
+//     // store the name of this suffix in lms_names, in the same place
+//     // the suffix occurs in the original string
+//     lms_names.at(suffix_offset) = current_name;
+//   }
+
+//   for (int i = 0, n = lms_names.size(); i < n; i++) {
+//     if (lms_names.at(i) == -1) continue;
+
+//     summary_suffix_offsets->push_back(i);
+//     summary_string->push_back(lms_names.at(i));
+//   }
+
+//   int summary_alphabet_size = current_name + 1;
+//   return summary_alphabet_size;
+// }
+
 int SummarizeSuffixArray(const std::vector<int> &text,
                          const std::vector<int> &suffix_array,
                          const std::vector<char> &typemap,
@@ -194,13 +246,13 @@ int SummarizeSuffixArray(const std::vector<int> &text,
   // that they appear in the original string
   vector<int> lms_names(text.size() + 1, -1);
 
-  int current_name = 0;
-  int last_lms_suffix_offset = suffix_array.at(0);
+  int current_name = -1;
+  int last_lms_suffix_offset = -1;
 
   // the first LMS substring is always the empty string
-  lms_names.at(suffix_array.at(0)) = current_name;
+  // lms_names.at(suffix_array.at(0)) = current_name;
 
-  for (int i = 1, n = suffix_array.size(); i < n; i++) {
+  for (int i = 0, n = suffix_array.size(); i < n; i++) {
     // where does this suffix appear in the original string?
     int suffix_offset = suffix_array.at(i);
 
@@ -208,9 +260,11 @@ int SummarizeSuffixArray(const std::vector<int> &text,
 
     // if this LMS suffix starts with a different LMS substring from the last
     // one, then it gets a new name
+    bool diff = false;
     if (!LMSSubstringsAreEqual(text, typemap, last_lms_suffix_offset,
                                suffix_offset)) {
       current_name++;
+      diff = true;
     }
 
     // record the last LMS suffix we looked at
@@ -221,7 +275,7 @@ int SummarizeSuffixArray(const std::vector<int> &text,
     lms_names.at(suffix_offset) = current_name;
   }
 
-  for (int i = 0, n = lms_names.size(); i < n; i++) {
+  for (int i = 0, n = lms_names.size() - 1; i < n; i++) {
     if (lms_names.at(i) == -1) continue;
 
     summary_suffix_offsets->push_back(i);
@@ -236,14 +290,14 @@ void MakeSummarySuffixArray(const vector<int> &summary_string,
                             int summary_alphabet_size, int debug_depth,
                             vector<int> *suffix_array, vector<int> *lcp_array) {
   int summary_len = summary_string.size();
-  if (summary_alphabet_size == summary_len) {
+  if (summary_alphabet_size == summary_len + 1) {
     assert(CheckUnique(summary_string));
 
     (*suffix_array).at(0) = summary_len;
 
     for (int x = 0; x < summary_len; x++) {
       int y = summary_string.at(x);
-      (*suffix_array).at(y + 1) = x;
+      (*suffix_array).at(y) = x;
     }
 
     // for (int i = 0, n = (*suffix_array).size(); i < n; i++) {
@@ -266,10 +320,12 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
                             const vector<int> &summary_suffix_array,
                             const vector<int> &summary_lcp_array) {
   vector<int> lms_lcp_values(summary_lcp_array.size(), 0);
+  int n = summary_suffix_offsets.size();
+  if (n == 0) return lms_lcp_values;
   int sum = 0;
-  vector<int> cumulative_lms_lengths(summary_suffix_offsets.size(), -1);
+  vector<int> cumulative_lms_lengths(n, -1);
   cumulative_lms_lengths.at(0) = 0;
-  for (int i = 1, n = summary_suffix_offsets.size(); i < n; i++) {
+  for (int i = 1; i < n; i++) {
     sum += summary_suffix_offsets.at(i) - summary_suffix_offsets.at(i - 1);
     cumulative_lms_lengths.at(i) = sum;
   }
@@ -294,6 +350,34 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
   return lms_lcp_values;
 }
 
+// void AccurateLMSSort(const vector<int> &text, const vector<char> &typemap,
+//                      int debug_depth, const vector<int>
+//                      &summary_suffix_array, const vector<int>
+//                      &summary_lcp_array, const vector<int>
+//                      &summary_suffix_offsets, const vector<int>
+//                      &lms_lcp_values, vector<int> *bucket_tails, vector<int>
+//                      *suffix_array, vector<int> *lcp_array, vector<int>
+//                      *first_lms) {
+//   for (int i = summary_suffix_array.size() - 1; i > 1; i--) {
+//     int string_index = summary_suffix_offsets.at(summary_suffix_array.at(i));
+
+//     int c = text.at(string_index);
+//     (*suffix_array).at((*bucket_tails).at(c)) = string_index;
+//     (*first_lms).at(c) = (*bucket_tails).at(c);
+//     if (lcp_array != NULL) {
+//       (*lcp_array).at((*bucket_tails).at(c)) = lms_lcp_values.at(i);
+//     }
+//     (*bucket_tails).at(c) -= 1;
+//   }
+
+//   (*suffix_array).at(0) = text.size();
+//   if (lcp_array != NULL) {
+//     (*lcp_array).at(0) = 0;
+//   }
+
+//   assert(CheckUnique((*suffix_array)));
+// }
+
 void AccurateLMSSort(const vector<int> &text, const vector<char> &typemap,
                      int debug_depth, const vector<int> &summary_suffix_array,
                      const vector<int> &summary_lcp_array,
@@ -301,7 +385,7 @@ void AccurateLMSSort(const vector<int> &text, const vector<char> &typemap,
                      const vector<int> &lms_lcp_values,
                      vector<int> *bucket_tails, vector<int> *suffix_array,
                      vector<int> *lcp_array, vector<int> *first_lms) {
-  for (int i = summary_suffix_array.size() - 1; i > 1; i--) {
+  for (int i = summary_suffix_array.size() - 1; i > 0; i--) {
     int string_index = summary_suffix_offsets.at(summary_suffix_array.at(i));
 
     int c = text.at(string_index);
@@ -321,40 +405,14 @@ void AccurateLMSSort(const vector<int> &text, const vector<char> &typemap,
   assert(CheckUnique((*suffix_array)));
 }
 
-// void DebugOutput(int type, bool debug_types, bool print_input, bool print_types,
-//                  bool print_per_bucket, const vector<int> &debug_input_array,
-//                  const vector<char> &debug_type_array,
-//                  const vector<int> &default_bucket_heads, const vector<int> &default_bucket_tails) {
-//   if (debug_types) {
-//     if (print_input) {
-//       PrintVector(debug_input_array, "Guessed input: ", cell_size, debug_depth);
-//     }
-//     if (print_types) {
-//       EncodeSeam(default_bucket_heads, default_bucket_tails, ls_seam,
-//                  &debug_type_array);
-//       PrintVector(debug_type_array, "Guessed types: ", cell_size, debug_depth);
-//     }
-//     if (print_per_bucket) {
-//       PrintPerBucket(*suffix_array, debug_type_array, default_bucket_heads,
-//                      default_bucket_tails, cell_size, debug_depth);
-//     }
-//     vector<int> type_counts = TypeCount(debug_type_array);
-//     PrintVector(type_counts, "Type counts: ", cell_size, debug_depth);
-//     if (type_counts[2] != start_type_counts[2]) {
-//       cout << "Invalid SStar types count" << endl;
-//     }
-//     cout << endl;
-//   }
-// }
-
 void BuildSuffixArray(const vector<int> &text, int alphabet_size,
                       int debug_depth, vector<int> *suffix_array,
                       vector<int> *lcp_array) {
   vector<int> debug_input_array((*suffix_array).size(), -1);
   vector<char> debug_type_array((*suffix_array).size(), '-');
-  bool debug_types = true;
-  bool print_input = true;
-  bool print_types = true;
+  bool debug_types = false;
+  bool print_input = false;
+  bool print_types = false;
   bool print_per_bucket = false;
   int cell_size = NumDigits(text.size()) + 1;
   cout << endl;
@@ -363,7 +421,7 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   vector<char> typemap = BuildTypeMap(text);
   PrintVector(typemap, "Suffix types: ", cell_size, debug_depth);
   vector<int> start_type_counts = TypeCount(typemap);
-  PrintVector(start_type_counts, "Type counts: ", cell_size, debug_depth);
+  // PrintVector(start_type_counts, "Type counts: ", cell_size, debug_depth);
 
   // vector<vector<int>> sorted_suffixes;
   // for (int i = 0, n = typemap.size(); i < n; i++) {
@@ -396,8 +454,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   FindBucketTails(bucket_sizes, &bucket_tails);
   vector<int> ls_seam = FindSeam(text, typemap, bucket_sizes);
 
-  GuessLMSSort(text, typemap, debug_depth, &bucket_tails, suffix_array,
-               &debug_type_array, &debug_input_array);
+  GuessLMSSort(text, typemap, cell_size, debug_depth, &bucket_tails,
+               suffix_array, &debug_type_array, &debug_input_array);
   PrintVector(*suffix_array, "Guessed SA: ", cell_size, debug_depth);
   if (debug_types) {
     if (print_input) {
@@ -420,8 +478,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
     cout << endl;
   }
 
-  InduceSortL(text, typemap, debug_depth, ls_seam, &bucket_heads, suffix_array,
-              &debug_type_array, &debug_input_array);
+  InduceSortL(text, typemap, cell_size, debug_depth, ls_seam, &bucket_heads,
+              suffix_array, &debug_type_array, &debug_input_array);
   PrintVector(*suffix_array, "After L induced: ", cell_size, debug_depth);
   if (debug_types) {
     if (print_input) {
@@ -446,8 +504,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
 
   FindBucketTails(bucket_sizes, &bucket_tails);
 
-  InduceSortS(text, typemap, debug_depth, ls_seam, &bucket_tails, suffix_array,
-              &debug_type_array, &debug_input_array);
+  InduceSortS(text, typemap, cell_size, debug_depth, ls_seam, &bucket_tails,
+              suffix_array, &debug_type_array, &debug_input_array);
   PrintVector(*suffix_array, "After S induced: ", cell_size, debug_depth);
   if (debug_types) {
     if (print_input) {
@@ -517,8 +575,9 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
     cout << endl;
   }
 
-  InduceSortL(text, typemap, debug_depth, ls_seam, &bucket_heads, suffix_array,
-              &debug_type_array, &debug_input_array, lcp_array, &first_lms);
+  InduceSortL(text, typemap, cell_size, debug_depth, ls_seam, &bucket_heads,
+              suffix_array, &debug_type_array, &debug_input_array, lcp_array,
+              &first_lms);
   PrintVector(*suffix_array, "Acc after L: ", cell_size, debug_depth);
   if (lcp_array != NULL) {
     PrintVector(*lcp_array, "LCP after L: ", cell_size, debug_depth);
@@ -527,8 +586,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
 
   FindBucketTails(bucket_sizes, &bucket_tails);
 
-  InduceSortS(text, typemap, debug_depth, ls_seam, &bucket_tails, suffix_array,
-              &debug_type_array, &debug_input_array, lcp_array);
+  InduceSortS(text, typemap, cell_size, debug_depth, ls_seam, &bucket_tails,
+              suffix_array, &debug_type_array, &debug_input_array, lcp_array);
   PrintVector(*suffix_array, "Acc after S: ", cell_size, debug_depth);
   if (lcp_array != NULL) {
     PrintVector(*lcp_array, "LCP after S: ", cell_size, debug_depth);

@@ -111,9 +111,10 @@ int main(int argc, char* argv[]) {
     //             "Bucket sizes: ", cell_size);
     // PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
     //                      FindBucketSizes(encoded, alphabet_size)), "L/S seams: ");
-    PrintVector(indices, "Index: ", cell_size);
-    PrintVector(text_chars, "Text: ", cell_size);
-    PrintVector(encoded, "Vector encoding: ", cell_size);
+    
+    // PrintVector(indices, "Index: ", cell_size);
+    // PrintVector(text_chars, "Text: ", cell_size);
+    // PrintVector(encoded, "Vector encoding: ", cell_size);
   } else {
     allow_printing = false;
     cout.setstate(ios_base::failbit);
@@ -124,8 +125,8 @@ int main(int argc, char* argv[]) {
   
   bool is_shit_broke = false;
   try {
-    // BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
-    BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, NULL);
+    BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+    // BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, NULL);
   } catch (...) {
     cerr << "shit is broke yo" << endl;
     is_shit_broke = true;
@@ -136,9 +137,11 @@ int main(int argc, char* argv[]) {
     cout.clear();
   }
 
-  vector<int> correct_sa(n);
-  vector<int> correct_lcp(n);
+  vector<int> correct_sa(n + 1);
+  vector<int> correct_lcp(n + 1);
   SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
+  correct_sa.resize(n);
+  correct_lcp.resize(n);
   vector<int> correct_rank_lcp(n);
   if (!is_shit_broke) {
     SuffixArrayToLCP(encoded, suffix_array, &correct_rank_lcp);
@@ -169,13 +172,15 @@ int main(int argc, char* argv[]) {
     cout << "Rank is wrong" << endl;
   }
 
-  if (suffix_array != correct_sa) {
-    cout << "Wrong SA!" << endl;
+  if (suffix_array == correct_sa) {
+    cout << "SA is OK" << endl;
+  } else {
+    cout << "SA is WRONG!" << endl;
   }
 
   if (lcp_array == correct_lcp) {
     cout << "LCP is OK" << endl;
   } else {
-    cout << "LCP is WRONG" << endl;
+    cout << "LCP is WRONG!" << endl;
   }
 }

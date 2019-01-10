@@ -18,8 +18,8 @@ vector<char> BuildTypeMap(const vector<int> &text) {
   suffix_types.at(length - 1) = kLType;
 
   for (int i = length - 2; i >= 0; i--) {
-    char c1 = text.at(i);
-    char c2 = text.at(i + 1);
+    int c1 = text.at(i);
+    int c2 = text.at(i + 1);
 
     if (c1 < c2 || (c1 == c2 && suffix_types.at(i + 1) == kSType)) {
       suffix_types.at(i) = kSType;
@@ -91,25 +91,65 @@ bool IsLMSChar(int offset, const vector<char> &typemap) {
   return typemap.at(offset) == kSStarType;
 }
 
+// bool LMSSubstringsAreEqual(const std::vector<int> &text,
+//                            const std::vector<char> &typemap, int offset_a,
+//                            int offset_b) {
+//   if (offset_a == offset_b) return true;
+//   if (offset_a < 0 || offset_b < 0) return false;
+//   int len = text.size();
+//   if (offset_a == len || offset_b == len) return false;
+
+//   int i = 0;
+//   while (true) {
+//     bool is_a_lms = IsLMSChar(offset_a + i, typemap);
+//     bool is_b_lms = IsLMSChar(offset_b + i, typemap);
+
+//     // if we found our way to the next LMS substring
+//     // then there's no difference between the original
+//     // LMS substrings
+//     if (i > 0 && is_a_lms && is_b_lms) return true;
+
+//     if (is_a_lms != is_b_lms) return false;
+
+//     int first_char = text.at(offset_a + i);
+//     int second_char = text.at(offset_b + i);
+//     if (first_char != second_char) return false;
+
+//     i++;
+//   }
+// }
+
 bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            const std::vector<char> &typemap, int offset_a,
                            int offset_b) {
-  int len = text.size();
-  if (offset_a == len || offset_b == len) return false;
-
+  if (offset_a < 0) return false;
+  int text_len = text.size();
   int i = 0;
   while (true) {
-    bool is_a_lms = IsLMSChar(offset_a + i, typemap);
-    bool is_b_lms = IsLMSChar(offset_b + i, typemap);
+    char char_a;
+    if (offset_a + i == text_len) {
+      char_a = '$';
+    } else {
+      char_a = text.at(offset_a + i);
+    }
+    char char_b;
+    if (offset_b + i == text_len) {
+      char_b = '$';
+    } else {
+      char_b = text.at(offset_b + i);
+    }
+    char type_a = typemap.at(offset_a + i);
+    char type_b = typemap.at(offset_b + i);
+    if (char_a != char_b ||
+        (type_a == kLType && type_b != kLType) ||
+        (type_b == kLType && type_a != kLType)) {
+      return false;
+    }
 
-    // if we found our way to the next LMS substring
-    // then there's no difference between the original
-    // LMS substrings
-    if (i > 0 && is_a_lms && is_b_lms) return true;
-
-    if (is_a_lms != is_b_lms) return false;
-    if (text.at(offset_a + i) != text.at(offset_b + i)) return false;
-
+    if (i > 0 && (IsLMSChar(offset_a + i, typemap) ||
+                  IsLMSChar(offset_b + i, typemap))) {
+      return true;
+    }
     i++;
   }
 }
@@ -244,8 +284,10 @@ void PrintPerBucket(const vector<int> &values, const vector<char> &typemap,
     if (bucket_end < bucket_start || bucket_end >= n) {
       break;
     }
-    vector<int> SA_subvector(values.begin() + bucket_start, values.begin() + bucket_end + 1);
-    vector<char> types_subvector(typemap.begin() + bucket_start, typemap.begin() + bucket_end + 1);
+    vector<int> SA_subvector(values.begin() + bucket_start,
+                             values.begin() + bucket_end + 1);
+    vector<char> types_subvector(typemap.begin() + bucket_start,
+                                 typemap.begin() + bucket_end + 1);
     string s = to_string(i);
     PrintVector(SA_subvector, s, cell_size, debug_depth);
     PrintVector(types_subvector, "", cell_size, debug_depth);
