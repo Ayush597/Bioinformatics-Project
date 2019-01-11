@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 -g
+CXXFLAGS = -std=c++11 -O3
 
 SAIS_LCP_FILE_NAME = sais_lcp
 SAIS_LCP_MAIN_NAME_EXTENSION = _main
@@ -16,7 +16,7 @@ else
 	RM := rm
 endif
 
-all: $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) 
+all: $(SAIS_LCP_MAIN_OUT) $(TEST_OUT)
 
 # $@: the target filename.
 # $*: the target filename without the file extension.
@@ -47,8 +47,8 @@ sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h sais.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
 sais.o: sais.c sais.h
-	$(CXX) $(CXXFLAGS) -c $*.c
+	g++ -std=c++11 -c sais.c
 
 clean:
 	$(RM) -f $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) \
-			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o 
+			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o
