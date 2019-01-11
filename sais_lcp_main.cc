@@ -4,6 +4,7 @@
 #include <memory>
 #include <sstream>
 #include <time.h>
+#include <cassert>
 
 #include "sa_to_lcp.h"
 #include "sais_lcp.h"
@@ -22,6 +23,23 @@ string LoadFromFile(const string& filename) {
   return ss.str();
 }
 
+vector<char> LoadFromFileToVector(const string& filename) {
+  ifstream file(filename);
+
+  if (file.eof() || file.fail()) {
+    throw -1;
+  }
+
+  file.seekg(0, ios_base::end);
+  streampos fileSize = file.tellg();
+  vector<char> vec((unsigned int) fileSize);
+
+  file.seekg(0, ios_base::beg);
+  file.read(&vec[0], fileSize);
+
+  return vec;
+}
+
 vector<int> EncodeAlphabetically(const string& text) {
   int n = text.length();
   vector<int> encoded(n);
@@ -30,6 +48,19 @@ vector<int> EncodeAlphabetically(const string& text) {
 
   for (int i = 0; i < n; i++) {
     encoded[i] = text[i] - min_char;
+  }
+
+  return encoded;
+}
+
+vector<char> EncodeVectorAlphabetically(const vector<char>& chars) {
+  int n = chars.size();
+  vector<char> encoded(n);
+
+  int min_char = *min_element(begin(chars), end(chars));
+
+  for (int i = 0; i < n; i++) {
+    encoded[i] = chars[i] - min_char;
   }
 
   return encoded;
@@ -67,9 +98,11 @@ int main(int argc, char* argv[]) {
 
   string filename = argv[1];
   string text = LoadFromFile(filename);
-  int n = text.size() + 1;
+  vector<char> chars = LoadFromFileToVector(filename);
+  int n = chars.size() + 1;
 
   vector<int> encoded = EncodeAlphabetically(text);
+  vector<char> encodedChar = EncodeVectorAlphabetically(chars);
 
   if (!enable_printing) {
     allow_printing = false;
