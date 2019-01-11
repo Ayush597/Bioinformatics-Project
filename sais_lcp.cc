@@ -252,13 +252,12 @@ void MakeSummarySuffixArray(const vector<int> &summary_string,
   }
 }
 
-vector<int> ComputeLCPOfLMS(const vector<int> &text,
+void ComputeLCPOfLMS(const vector<int> &text,
                             const vector<int> &summary_suffix_offsets,
                             const vector<int> &summary_suffix_array,
-                            const vector<int> &summary_lcp_array) {
-  vector<int> lms_lcp_values(summary_lcp_array.size(), 0);
+                            vector<int> *summary_lcp_array) {
   int n = summary_suffix_offsets.size();
-  if (n == 0) return lms_lcp_values;
+  if (n == 0) return;
   int sum = 0;
   vector<int> cumulative_lms_lengths(n, -1);
   cumulative_lms_lengths[0] = 0;
@@ -267,10 +266,10 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
     cumulative_lms_lengths[i] = sum;
   }
 
-  for (int k = 2, n = summary_lcp_array.size(); k < n; k++) {
+  for (int k = 2, n = (*summary_lcp_array).size(); k < n; k++) {
     int j = summary_suffix_array[k];
     int common_lsm_sum =
-        cumulative_lms_lengths[j + summary_lcp_array[k]] -
+        cumulative_lms_lengths[j + (*summary_lcp_array)[k]] -
         cumulative_lms_lengths[j];
 
     int first_pos_in_text =
@@ -281,15 +280,14 @@ vector<int> ComputeLCPOfLMS(const vector<int> &text,
     int num_same_chars_after_lsm =
         CountSameChars(text, first_pos_in_text, second_pos_in_text);
 
-    lms_lcp_values[k] = common_lsm_sum + num_same_chars_after_lsm;
+    (*summary_lcp_array)[k] = common_lsm_sum + num_same_chars_after_lsm;
   }
-
-  return lms_lcp_values;
+  (*summary_lcp_array)[0] = 0;
+  (*summary_lcp_array)[1] = 0;
 }
 
-void AccurateLMSSort(const vector<int> &text, const vector<char> &typemap,
+void AccurateLMSSort(const vector<int> &text, 
                      const vector<int> &summary_suffix_array,
-                     const vector<int> &summary_lcp_array,
                      const vector<int> &summary_suffix_offsets,
                      const vector<int> &lms_lcp_values,
                      vector<int> *bucket_tails, vector<int> *suffix_array,
@@ -453,10 +451,9 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   //   PrintVector(summary_lcp_array, "Summary LCP: ", cell_size, debug_depth);
   // }
 
-  vector<int> lms_lcp_values;
   if (lcp_array != NULL) {
-    lms_lcp_values = ComputeLCPOfLMS(text, summary_suffix_offsets,
-                                     summary_suffix_array, summary_lcp_array);
+    ComputeLCPOfLMS(text, summary_suffix_offsets,
+                                     summary_suffix_array, &summary_lcp_array);
     // PrintVector(lms_lcp_values, "LMS LCP: ", cell_size, debug_depth);
     fill((*lcp_array).begin(), (*lcp_array).end(), -1);
   }
@@ -466,8 +463,8 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   FindBucketTails(bucket_sizes, &bucket_tails);
 
   vector<int> first_lms(bucket_sizes.size(), -1);
-  AccurateLMSSort(text, typemap, summary_suffix_array, summary_lcp_array,
-                  summary_suffix_offsets, lms_lcp_values, &bucket_tails,
+  AccurateLMSSort(text, summary_suffix_array,
+                  summary_suffix_offsets, summary_lcp_array, &bucket_tails,
                   suffix_array, lcp_array, &first_lms);
 
   // cout << endl;
