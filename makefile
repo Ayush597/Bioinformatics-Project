@@ -7,27 +7,16 @@ SAIS_LCP_MAIN_FILE_NAME = $(SAIS_LCP_FILE_NAME)$(SAIS_LCP_MAIN_NAME_EXTENSION)
 TEST_FILE_NAME = test
 
 ifeq ($(OS),Windows_NT)
-    PROGRAM_OUT := program.exe
 	SAIS_LCP_MAIN_OUT := $(SAIS_LCP_MAIN_FILE_NAME).exe
 	TEST_OUT := $(TEST_FILE_NAME).exe
 	RM := del
 else
-    PROGRAM_OUT := program.out
 	SAIS_LCP_MAIN_OUT := $(SAIS_LCP_MAIN_FILE_NAME).out
 	TEST_OUT := $(TEST_FILE_NAME).out
 	RM := rm
 endif
 
-all: $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) stud_main.exe
-
-$(PROGRAM_OUT): program.o suffix.o
-	$(CXX) $(CXXFLAGS) -o $(PROGRAM_OUT) program.o suffix.o
-
-program.o: program.cc suffix.h
-	$(CXX) $(CXXFLAGS) -c program.cc
-
-suffix.o: suffix.cc suffix.h
-	$(CXX) $(CXXFLAGS) -c suffix.cc
+all: $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) 
 
 # $@: the target filename.
 # $*: the target filename without the file extension.
@@ -60,16 +49,6 @@ sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h sais.h
 sais.o: sais.c sais.h
 	$(CXX) $(CXXFLAGS) -c $*.c
 
-stud_main.exe: stud_sais_lcp_original.o stud_main.o stud_sais.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-stud_sais.o: stud_sais.cc stud_sais.h
-	$(CXX) $(CXXFLAGS) -c $*.cc
-
-stud_sais_lcp_original.o: stud_sais_lcp_original.cc stud_sais_lcp_original.h
-	$(CXX) $(CXXFLAGS) -c $*.cc
-
 clean:
-	$(RM) -f $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) program.o suffix.o \
-			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o \
-			stud_main.exe stud_sais.o stud_main.o stud_sais_lcp_original.o
+	$(RM) -f $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) \
+			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o 
