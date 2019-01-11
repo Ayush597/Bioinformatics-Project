@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <time.h>
 
 #include "sa_to_lcp.h"
 #include "sais_lcp.h"
@@ -111,7 +112,7 @@ int main(int argc, char* argv[]) {
     //             "Bucket sizes: ", cell_size);
     // PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
     //                      FindBucketSizes(encoded, alphabet_size)), "L/S seams: ");
-    
+
     // PrintVector(indices, "Index: ", cell_size);
     // PrintVector(text_chars, "Text: ", cell_size);
     // PrintVector(encoded, "Vector encoding: ", cell_size);
@@ -122,10 +123,17 @@ int main(int argc, char* argv[]) {
 
   vector<int> suffix_array(n, -1);
   vector<int> lcp_array(n, -1);
-  
+
+  clock_t start, finish;
+  double measuredTime;
+
   bool is_shit_broke = false;
   try {
+    start = clock();
     BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+    finish = clock();
+    measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
+    cerr << "Our time: " << measuredTime << '\n';
     // BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, NULL);
   } catch (...) {
     cerr << "shit is broke yo" << endl;
@@ -139,7 +147,15 @@ int main(int argc, char* argv[]) {
 
   vector<int> correct_sa(n + 1);
   vector<int> correct_lcp(n + 1);
+
+  // start sluzbeno novija
+  start = clock();
   SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
+  finish = clock();
+  measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
+  cerr << "Original time: " << measuredTime << '\n';
+  // end sluzbeno novija
+
   correct_sa.resize(n);
   correct_lcp.resize(n);
   vector<int> correct_rank_lcp(n);
@@ -153,7 +169,7 @@ int main(int argc, char* argv[]) {
     PrintVector(correct_rank_lcp, "LCP rank: ", cell_size);
   }
   PrintVector(correct_lcp, "LCP should be: ", cell_size);
-  
+
   // vector<int> int_sa(n, 0);
   // vector<int> encoded_expanded(n);
   // for (int i = 0; i < n; i++) {

@@ -83,7 +83,7 @@ int main(int argc, const char *argv[]) {
 	finish = clock();
 	double myTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
 	printf("Time: %.4f sec\n", myTime);
-	std::cerr << myTime << "\n";
+	std::cerr << "Student time: " << myTime << "\n";
 
 	printf("SA-IS LCP original - start...\n");
 	start = clock();
