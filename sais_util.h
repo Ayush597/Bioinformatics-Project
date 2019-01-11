@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-extern const char kLType;
-extern const char kSType;
-extern const char kSStarType;
+const char kLType = 'L';
+const char kSType = 'S';
+const char kSStarType = '*';
 
 template <typename T>
 int NumDigits(T number) {
@@ -65,7 +65,9 @@ std::vector<int> FindSeam(const std::vector<int> &text,
                           const std::vector<char> &typemap,
                           const std::vector<int> &bucket_sizes);
 
-bool IsLMSChar(int offset, const std::vector<char> &typemap);
+inline bool IsLMSChar(int offset, const std::vector<char> &typemap) {
+  return typemap[offset] == kSStarType;
+}
 
 bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            const std::vector<char> &typemap, int offset_a,
