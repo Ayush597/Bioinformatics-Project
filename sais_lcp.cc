@@ -52,17 +52,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
   int n = suffix_array->size();
   int m = (*bucket_heads).size();
 
-  vector<int> iteration(n);
-  vector<int> is_first_in_bucket(n, 0);
-
-  vector<int> last_l_suffix(m, -1);
-
-  for (int i = 0; i < m; i++) {
-    if ((*bucket_heads)[i] >= n) {
-      break;
-    }
-    is_first_in_bucket[(*bucket_heads)[i]] = 1;
-  }
+  vector<int> iteration(m, -1);
 
   for (int i = 0; i < n; i++) {
     if ((*suffix_array)[i] == -1) continue;
@@ -78,7 +68,6 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
     (*suffix_array)[k] = j;
     // (*debug_input_array)[k] = text.at((*suffix_array)[k]);
     // (*debug_type_array)[k] = typemap[j];
-    last_l_suffix[c] = k;
     (*bucket_heads)[c] += 1;
 
     if (lcp_array == NULL) {
@@ -98,17 +87,13 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
       }
     }
 
-    iteration[k] = i;
+    int prev_iter = iteration[c];
+    iteration[c] = i;
 
-    if (is_first_in_bucket[k]) {
+    if (prev_iter == -1) {
       (*lcp_array)[k] = 0;
-    }
-
-    if (is_first_in_bucket[k]) {
       continue;
     }
-
-    int prev_iter = iteration[k - 1];
 
     if ((*suffix_array)[prev_iter] < ((int)text.size()) &&
         text[(*suffix_array)[i]] !=
@@ -138,15 +123,7 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
   int n = suffix_array->size();
   int m = (*bucket_tails).size();
 
-  vector<int> iteration(n);
-  vector<int> is_first_in_bucket(n, 0);
-
-  for (int i = 0; i < m; i++) {
-    if ((*bucket_tails)[i] >= n) {
-      break;
-    }
-    is_first_in_bucket[(*bucket_tails)[i]] = 1;
-  }
+  vector<int> iteration(m, -1);
 
   for (int i = n - 1; i >= 0; i--) {
     int j = (*suffix_array)[i] - 1;
@@ -165,9 +142,10 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
       continue;
     }
 
-    iteration[k] = i;
+    int prev_iter = iteration[c];
+    iteration[c] = i;
 
-    if (is_first_in_bucket[k]) {
+    if (prev_iter == -1) {
       (*lcp_array)[k] = 0;
     }
 
@@ -182,11 +160,9 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
       }
     }
 
-    if (is_first_in_bucket[k]) {
+    if (prev_iter == -1) {
       continue;
     }
-
-    int prev_iter = iteration[k + 1];
 
     if ((*suffix_array)[prev_iter] < ((int)text.size()) &&
         text[(*suffix_array)[i]] !=
