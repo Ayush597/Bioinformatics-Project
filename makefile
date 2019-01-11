@@ -70,6 +70,6 @@ stud_sais_lcp_original.o: stud_sais_lcp_original.cc stud_sais_lcp_original.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
 clean:
-	$(RM) $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) program.o suffix.o \
+	$(RM) -f $(PROGRAM_OUT) $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) program.o suffix.o \
 			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o \
-			stud_main.exe stud_sais.o
+			stud_main.exe stud_sais.o stud_main.o stud_sais_lcp_original.o
