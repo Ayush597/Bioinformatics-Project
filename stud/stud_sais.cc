@@ -78,7 +78,7 @@ void induceSA(const unsigned char *t, int *SA, const void *s, const int *counts,
 		if (j >= 0 && !tget(j)) SA[bkt[chr(j)]++] = j;
 	}
 
-	PrintValues(SA, n);
+	// PrintValues(SA, n);
 
 	// Induce S-type
 	getBuckets(counts, bkt, K, true); // find ends of buckets
@@ -87,7 +87,7 @@ void induceSA(const unsigned char *t, int *SA, const void *s, const int *counts,
 		if (j >= 0 && tget(j)) SA[--bkt[chr(j)]] = j;
 	}
 
-	PrintValues(SA, n);
+	// PrintValues(SA, n);
 }
 
 int findMinima(int *LCP, int first, int last)
@@ -119,7 +119,7 @@ void induceSaLcp(const unsigned char *t, int *SA, int *LCP, const void *s, const
 
 		if (j >= 0 && !tget(j))
 		{
-			if (st[chr(j)] == -1) // It's the first element of bucket 
+			if (st[chr(j)] == -1) // It's the first element of bucket
 			{
 				LCP[bkt[chr(j)]] = 0;
 			}
@@ -177,7 +177,7 @@ void induceSaLcp(const unsigned char *t, int *SA, int *LCP, const void *s, const
 			if (st[chr(j)] != -1)
 			{
 				m = SA[bkt[chr(j)] + 1] + 1;
-				if (chr(m) != chr(j + 1))	// only first characters match 
+				if (chr(m) != chr(j + 1))	// only first characters match
 				{
 					LCP[bkt[chr(j)] + 1] = 1;
 				}
@@ -227,7 +227,7 @@ void SA_LCP_IS(const void *s, int *SA, int *LCP, int n, int K, int cs, bool leve
 	for (i = 1; i < n; i++)
 		if (isLMS(i)) SA[--bkt[chr(i)]] = i;
 
-	PrintValues(SA, n);
+	// PrintValues(SA, n);
 
 	induceSA(t, SA, s, counts, bkt, n, K, cs);
 
@@ -258,7 +258,7 @@ void SA_LCP_IS(const void *s, int *SA, int *LCP, int n, int K, int cs, bool leve
 	for (i = n - 1, j = n - 1; i >= n1; i--)
 		if (SA[i] >= 0) SA[j--] = SA[i];
 
-	// Solve the reduced problem	
+	// Solve the reduced problem
 	int *SA1 = SA, *s1 = SA + n - n1;
 	if (name < n1)
 		SA_LCP_IS((unsigned char*)s1, SA1, NULL, n1, name - 1, sizeof(int), false);
