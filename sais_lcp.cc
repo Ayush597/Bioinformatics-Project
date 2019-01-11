@@ -8,13 +8,11 @@
 
 using namespace std;
 
-
-
 /******************
         UTILS
  ******************/
-
-vector<char> BuildTypeMap(const vector<int> &text) {
+template <typename T>
+vector<char> BuildTypeMap(const vector<T> &text) {
   int length = text.size();
 
   vector<char> suffix_types(length + 1);
@@ -22,8 +20,8 @@ vector<char> BuildTypeMap(const vector<int> &text) {
   suffix_types[length - 1] = kLType;
 
   for (int i = length - 2; i >= 0; i--) {
-    int c1 = text[i];
-    int c2 = text[i + 1];
+    T c1 = text[i];
+    T c2 = text[i + 1];
 
     if (c1 < c2 || (c1 == c2 && suffix_types[i + 1] == kSType)) {
       suffix_types[i] = kSType;
@@ -39,17 +37,19 @@ vector<char> BuildTypeMap(const vector<int> &text) {
   return suffix_types;
 }
 
-vector<int> FindBucketSizes(const vector<int> &text, int alphabet_size) {
+template <typename T>
+vector<int> FindBucketSizes(const vector<T> &text, int alphabet_size) {
   vector<int> result(alphabet_size, 0);
 
-  for (int c : text) {
+  for (T c : text) {
     result[c]++;
   }
 
   return result;
 }
 
-vector<int> FindSeam(const vector<int> &text, const vector<char> &typemap,
+template <typename T>
+vector<int> FindSeam(const vector<T> &text, const vector<char> &typemap,
                      const vector<int> &bucket_sizes) {
   int m = bucket_sizes.size();
   vector<int> seam_locations(m, 0);
@@ -68,7 +68,8 @@ vector<int> FindSeam(const vector<int> &text, const vector<char> &typemap,
   return seam_locations;
 }
 
-int CountSameChars(const vector<int> &text, int first_pos_in_text,
+template <typename T>
+int CountSameChars(const vector<T> &text, int first_pos_in_text,
                    int second_pos_in_text) {
   int num_same_chars = 0;
   int n = text.size();
@@ -85,7 +86,8 @@ int CountSameChars(const vector<int> &text, int first_pos_in_text,
   return num_same_chars;
 }
 
-bool LMSSubstringsAreEqual(const std::vector<int> &text,
+template <typename T>
+bool LMSSubstringsAreEqual(const std::vector<T> &text,
                            const std::vector<char> &typemap, int offset_a,
                            int offset_b) {
   if (offset_a < 0) return false;
@@ -115,7 +117,8 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
   UTILS end
 *************/
 
-void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
+template <typename T>
+void GuessLMSSort(const vector<T> &text, const vector<char> &typemap,
                   vector<int> *bucket_tails, vector<int> *suffix_array) {
   int n = text.size();
   for (int i = 0; i < n; i++) {
@@ -131,7 +134,8 @@ void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
   (*suffix_array)[0] = n;
 }
 
-void InduceSortL(const vector<int> &text, const vector<char> &typemap,
+template <typename T>
+void InduceSortL(const vector<T> &text, const vector<char> &typemap,
                  const vector<int> &ls_seam, vector<int> *bucket_heads,
                  vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array = NULL,
                  vector<int> *first_lms = NULL) {
@@ -147,7 +151,7 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
     if (j < 0) continue;
     if (typemap[j] != kLType) continue;
 
-    int c = text[j];
+    T c = text[j];
 
     int k = (*bucket_heads)[c];
     (*suffix_array)[k] = j;
@@ -186,7 +190,8 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
   }
 }
 
-void InduceSortS(const vector<int> &text, const vector<char> &typemap,
+template <typename T>
+void InduceSortS(const vector<T> &text, const vector<char> &typemap,
                  const vector<int> &ls_seam, vector<int> *bucket_tails,
                  vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array = NULL) {
   int n = suffix_array->size();
@@ -200,7 +205,7 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
     if (j < 0) continue;
     if (typemap[j] != kSType && typemap[j] != kSStarType) continue;
 
-    int c = text[j];
+    T c = text[j];
     int k = (*bucket_tails)[c];
     (*suffix_array)[k] = j;
     (*bucket_tails)[c] -= 1;
@@ -242,7 +247,8 @@ void InduceSortS(const vector<int> &text, const vector<char> &typemap,
   }
 }
 
-int SummarizeSuffixArray(const std::vector<int> &text,
+template <typename T>
+int SummarizeSuffixArray(const std::vector<T> &text,
                          const std::vector<int> &suffix_array,
                          const std::vector<char> &typemap,
                          std::vector<int> *summary_string,
@@ -310,7 +316,8 @@ void MakeSummarySuffixArray(const vector<int> &summary_string,
   }
 }
 
-void ComputeLCPOfLMS(const vector<int> &text,
+template <typename T>
+void ComputeLCPOfLMS(const vector<T> &text,
                             const vector<int> &summary_suffix_offsets,
                             const vector<int> &summary_suffix_array,
                             vector<LCP_ARRAY_TYPE> *summary_lcp_array) {
@@ -344,7 +351,8 @@ void ComputeLCPOfLMS(const vector<int> &text,
   (*summary_lcp_array)[1] = 0;
 }
 
-void AccurateLMSSort(const vector<int> &text,
+template <typename T>
+void AccurateLMSSort(const vector<T> &text,
                      const vector<int> &summary_suffix_array,
                      const vector<int> &summary_suffix_offsets,
                      const vector<LCP_ARRAY_TYPE> &lms_lcp_values,
@@ -353,7 +361,7 @@ void AccurateLMSSort(const vector<int> &text,
   for (int i = summary_suffix_array.size() - 1; i > 0; i--) {
     int string_index = summary_suffix_offsets[summary_suffix_array[i]];
 
-    int c = text[string_index];
+    T c = text[string_index];
     (*suffix_array)[(*bucket_tails)[c]] = string_index;
     (*first_lms)[c] = (*bucket_tails)[c];
     if (lcp_array != NULL) {
@@ -374,7 +382,8 @@ void AccurateLMSSort(const vector<int> &text,
  * suffix array which only adds O(n) time complexity. Input text doesn't have
  * to contain the special sentinel character ('$') as its presence is implied.
  */
-void BuildSuffixArray(const vector<int> &text, int alphabet_size,
+template <typename T>
+void TBuildSuffixArray(const vector<T> &text, int alphabet_size,
                       vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array) {
 
   vector<char> typemap = BuildTypeMap(text);
@@ -433,4 +442,16 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   FindBucketTails(bucket_sizes, &bucket_tails);
 
   InduceSortS(text, typemap, ls_seam, &bucket_tails, suffix_array, lcp_array);
+}
+
+void BuildSuffixArray(const std::vector<char> &text, int alphabet_size,
+                      std::vector<int> *suffix_array,
+                      std::vector<LCP_ARRAY_TYPE> *lcp_array) {
+  TBuildSuffixArray(text, alphabet_size, suffix_array, lcp_array);
+}
+
+void BuildSuffixArray(const std::vector<int> &text, int alphabet_size,
+                      std::vector<int> *suffix_array,
+                      std::vector<LCP_ARRAY_TYPE> *lcp_array) {
+  TBuildSuffixArray(text, alphabet_size, suffix_array, lcp_array);
 }

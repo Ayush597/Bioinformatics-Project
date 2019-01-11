@@ -8,11 +8,15 @@
 
 #define LCP_ARRAY_TYPE short int
 
-const char kLType = 'L';
-const char kSType = 'S';
-const char kSStarType = '*';
+#define kLType 'L'
+#define kSType 'S'
+#define kSStarType '*'
 
 void BuildSuffixArray(const std::vector<int> &text, int alphabet_size,
+                      std::vector<int> *suffix_array,
+                      std::vector<LCP_ARRAY_TYPE> *lcp_array);
+
+void BuildSuffixArray(const std::vector<char> &text, int alphabet_size,
                       std::vector<int> *suffix_array,
                       std::vector<LCP_ARRAY_TYPE> *lcp_array);
 

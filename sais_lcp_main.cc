@@ -14,15 +14,6 @@ using namespace std;
 
 bool allow_printing = true;
 
-string LoadFromFile(const string& filename) {
-  ifstream input_stream(filename);
-
-  stringstream ss;
-  ss << input_stream.rdbuf();
-
-  return ss.str();
-}
-
 vector<char> LoadFromFileToVector(const string& filename) {
   ifstream file(filename);
 
@@ -38,19 +29,6 @@ vector<char> LoadFromFileToVector(const string& filename) {
   file.read(&vec[0], fileSize);
 
   return vec;
-}
-
-vector<int> EncodeAlphabetically(const string& text) {
-  int n = text.length();
-  vector<int> encoded(n);
-
-  int min_char = *min_element(begin(text), end(text));
-
-  for (int i = 0; i < n; i++) {
-    encoded[i] = text[i] - min_char;
-  }
-
-  return encoded;
 }
 
 vector<char> EncodeVectorAlphabetically(const vector<char>& chars) {
@@ -97,12 +75,10 @@ int main(int argc, char* argv[]) {
   }
 
   string filename = argv[1];
-  string text = LoadFromFile(filename);
-  vector<char> chars = LoadFromFileToVector(filename);
-  int n = chars.size() + 1;
+  vector<char> text = LoadFromFileToVector(filename);
+  int n = text.size() + 1;
 
-  vector<int> encoded = EncodeAlphabetically(text);
-  vector<char> encodedChar = EncodeVectorAlphabetically(chars);
+  vector<char> encoded = EncodeVectorAlphabetically(text);
 
   if (!enable_printing) {
     allow_printing = false;
