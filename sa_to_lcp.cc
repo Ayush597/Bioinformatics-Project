@@ -8,7 +8,7 @@ using namespace std;
 
 // To construct and return LCP using Kasai's algorithm in O(n)
 void KasaiSAToLCP(const vector<int> &text, const vector<int> &suffix_array,
-                  vector<int> *lcp_array) {
+                  vector<LCP_ARRAY_TYPE> *lcp_array) {
   int n = suffix_array.size();
 
   // An auxiliary array to store inverse of suffix array
@@ -61,7 +61,7 @@ void KasaiSAToLCP(const vector<int> &text, const vector<int> &suffix_array,
 }
 
 void RankSAToLCP(const vector<int> &text, const vector<int> &suffix_array,
-                 vector<int> *lcp_array) {
+                 vector<LCP_ARRAY_TYPE> *lcp_array) {
   int n = text.size(), k = 0;
   vector<int> text2(text);
   text2.resize(text2.size() + 1);
@@ -88,7 +88,7 @@ void RankSAToLCP(const vector<int> &text, const vector<int> &suffix_array,
 }
 
 void ComputeLCPArray(const vector<int> &text, const vector<int> &SA,
-                     vector<int> *lcp_array) {
+                     vector<LCP_ARRAY_TYPE> *lcp_array) {
   int n = SA.size();
   vector<int> rank(n);
 
@@ -114,7 +114,7 @@ void ComputeLCPArray(const vector<int> &text, const vector<int> &SA,
 }
 
 void SuffixArrayToLCP(const vector<int> &text, const vector<int> &suffix_array,
-                      vector<int> *lcp_array) {
+                      vector<LCP_ARRAY_TYPE> *lcp_array) {
   // RankSAToLCP(text, suffix_array, lcp_array);
   // KasaiSAToLCP(text, suffix_array, lcp_array);
   ComputeLCPArray(text, suffix_array, lcp_array);

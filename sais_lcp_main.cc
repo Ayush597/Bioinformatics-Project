@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
   }
 
   vector<int> suffix_array(n, -1);
-  vector<int> lcp_array(n, -1);
+  vector<LCP_ARRAY_TYPE> lcp_array(n, -1);
 
   clock_t start, finish;
   double measuredTime;
@@ -160,7 +160,12 @@ int main(int argc, char* argv[]) {
   //   cout << "SA is WRONG!" << endl;
   // }
 
-  // if (lcp_array == correct_lcp) {
+  // vector<int> lcp_arr_test(lcp_array.size());
+  // for (int i = 0, nn = lcp_array.size(); i < nn; i++) {
+  //   lcp_arr_test[i] = lcp_array[i];
+  // }
+  //
+  // if (lcp_arr_test == correct_lcp) {
   //   cout << "LCP is OK" << endl;
   // } else {
   //   cout << "LCP is WRONG!" << endl;

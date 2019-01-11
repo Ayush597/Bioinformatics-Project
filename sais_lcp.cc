@@ -47,7 +47,7 @@ void GuessLMSSort(const vector<int> &text, const vector<char> &typemap,
 //                  vector<int> *first_lms = NULL) {
 void InduceSortL(const vector<int> &text, const vector<char> &typemap,
                  const vector<int> &ls_seam, vector<int> *bucket_heads,
-                 vector<int> *suffix_array, vector<int> *lcp_array = NULL,
+                 vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array = NULL,
                  vector<int> *first_lms = NULL) {
   int n = suffix_array->size();
   int m = (*bucket_heads).size();
@@ -116,10 +116,10 @@ void InduceSortL(const vector<int> &text, const vector<char> &typemap,
 //                  int cell_size, int debug_depth, const vector<int> &ls_seam,
 //                  vector<int> *bucket_tails, vector<int> *suffix_array,
 //                  vector<char> *debug_type_array, vector<int>
-//                  *debug_input_array, vector<int> *lcp_array = NULL) {
+//                  *debug_input_array, vector<LCP_ARRAY_TYPE> *lcp_array = NULL) {
 void InduceSortS(const vector<int> &text, const vector<char> &typemap,
                  const vector<int> &ls_seam, vector<int> *bucket_tails,
-                 vector<int> *suffix_array, vector<int> *lcp_array = NULL) {
+                 vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array = NULL) {
   int n = suffix_array->size();
   int m = (*bucket_tails).size();
 
@@ -225,7 +225,7 @@ int SummarizeSuffixArray(const std::vector<int> &text,
 
 void MakeSummarySuffixArray(const vector<int> &summary_string,
                             int summary_alphabet_size,
-                            vector<int> *suffix_array, vector<int> *lcp_array) {
+                            vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array) {
   int summary_len = summary_string.size();
   if (summary_alphabet_size == summary_len + 1) {
     // assert(CheckUnique(summary_string));
@@ -255,7 +255,7 @@ void MakeSummarySuffixArray(const vector<int> &summary_string,
 void ComputeLCPOfLMS(const vector<int> &text,
                             const vector<int> &summary_suffix_offsets,
                             const vector<int> &summary_suffix_array,
-                            vector<int> *summary_lcp_array) {
+                            vector<LCP_ARRAY_TYPE> *summary_lcp_array) {
   int n = summary_suffix_offsets.size();
   if (n == 0) return;
   int sum = 0;
@@ -286,12 +286,12 @@ void ComputeLCPOfLMS(const vector<int> &text,
   (*summary_lcp_array)[1] = 0;
 }
 
-void AccurateLMSSort(const vector<int> &text, 
+void AccurateLMSSort(const vector<int> &text,
                      const vector<int> &summary_suffix_array,
                      const vector<int> &summary_suffix_offsets,
-                     const vector<int> &lms_lcp_values,
+                     const vector<LCP_ARRAY_TYPE> &lms_lcp_values,
                      vector<int> *bucket_tails, vector<int> *suffix_array,
-                     vector<int> *lcp_array, vector<int> *first_lms) {
+                     vector<LCP_ARRAY_TYPE> *lcp_array, vector<int> *first_lms) {
   for (int i = summary_suffix_array.size() - 1; i > 0; i--) {
     int string_index = summary_suffix_offsets[summary_suffix_array[i]];
 
@@ -319,7 +319,7 @@ void AccurateLMSSort(const vector<int> &text,
  * to contain the special sentinel character ('$') as its presence is implied.
  */
 void BuildSuffixArray(const vector<int> &text, int alphabet_size,
-                      vector<int> *suffix_array, vector<int> *lcp_array) {
+                      vector<int> *suffix_array, vector<LCP_ARRAY_TYPE> *lcp_array) {
   // vector<int> debug_input_array((*suffix_array).size(), -1);
   // vector<char> debug_type_array((*suffix_array).size(), '-');
   // bool debug_types = false;
@@ -438,7 +438,7 @@ void BuildSuffixArray(const vector<int> &text, int alphabet_size,
   //             debug_depth);
 
   vector<int> summary_suffix_array(summary_string.size() + 1, -1);
-  vector<int> summary_lcp_array(summary_string.size() + 1, -1);
+  vector<LCP_ARRAY_TYPE> summary_lcp_array(summary_string.size() + 1, -1);
   if (lcp_array != NULL) {
     MakeSummarySuffixArray(summary_string, summary_alphabet_size,
                            &summary_suffix_array, &summary_lcp_array);

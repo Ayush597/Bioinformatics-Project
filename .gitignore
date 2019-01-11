@@ -65,3 +65,7 @@ tags
 
 # Folder with large data files
 data/
+
+# Massif outs
+massif.out.*
+

@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "sais_lcp.h"
+
 const char kLType = 'L';
 const char kSType = 'S';
 const char kSStarType = '*';
@@ -76,7 +78,7 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 int CountSameChars(const std::vector<int> &text, int first_pos_in_text,
                    int second_pos_in_text);
 
-int FindMinInRange(const std::vector<int> &array, int start_index,
+int FindMinInRange(const std::vector<LCP_ARRAY_TYPE> &array, int start_index,
                    int end_index);
 
 void EncodeSeam(const std::vector<int> &bucket_heads,
