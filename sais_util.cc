@@ -6,10 +6,6 @@
 
 using namespace std;
 
-const char kLType = 'L';
-const char kSType = 'S';
-const char kSStarType = '*';
-
 vector<char> BuildTypeMap(const vector<int> &text) {
   int length = text.size();
 
@@ -84,10 +80,6 @@ vector<int> FindSeam(const vector<int> &text, const vector<char> &typemap,
   }
 
   return seam_locations;
-}
-
-bool IsLMSChar(int offset, const vector<char> &typemap) {
-  return typemap[offset] == kSStarType;
 }
 
 bool LMSSubstringsAreEqual(const std::vector<int> &text,
