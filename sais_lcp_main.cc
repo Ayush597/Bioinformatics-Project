@@ -35,35 +35,35 @@ vector<int> EncodeAlphabetically(const string& text) {
   return encoded;
 }
 
-vector<int> EncodeByLexicographicalOrder(const string& text,
-                                         int alphabet_size = 256) {
-  int n = text.length();
-  vector<int> encoded(n);
+// vector<int> EncodeByLexicographicalOrder(const string& text,
+//                                          int alphabet_size = 256) {
+//   int n = text.length();
+//   vector<int> encoded(n);
 
-  vector<int> present_chars(alphabet_size, 0);
+//   vector<int> present_chars(alphabet_size, 0);
 
-  // keep track of characters present in input text
-  for (int i = 0; i < n; i++) {
-    present_chars.at(text.at(i)) = 1;
-  }
+//   // keep track of characters present in input text
+//   for (int i = 0; i < n; i++) {
+//     present_chars.at(text.at(i)) = 1;
+//   }
 
-  int current_int_name = 0;
-  for (int i = 0, n = present_chars.size(); i < n; i++) {
-    // give names only to characters which are used in input text
-    if (present_chars.at(i) == 1) {
-      present_chars.at(i) = current_int_name;
-      current_int_name++;
-    }
-  }
+//   int current_int_name = 0;
+//   for (int i = 0, n = present_chars.size(); i < n; i++) {
+//     // give names only to characters which are used in input text
+//     if (present_chars.at(i) == 1) {
+//       present_chars.at(i) = current_int_name;
+//       current_int_name++;
+//     }
+//   }
 
-  // characters are encoded with a number which represents their lexicographical
-  // order
-  for (int i = 0; i < n; i++) {
-    encoded.at(i) = present_chars.at(text.at(i));
-  }
+//   // characters are encoded with a number which represents their lexicographical
+//   // order
+//   for (int i = 0; i < n; i++) {
+//     encoded.at(i) = present_chars.at(text.at(i));
+//   }
 
-  return encoded;
-}
+//   return encoded;
+// }
 
 int main(int argc, char* argv[]) {
   bool enable_printing = true;
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
 
   // quick & dirty
 
-  vector<int> indices(n);
+  // vector<int> indices(n);
   vector<char> text_chars(n);
   for (int i = 0; i < n; i++) {
     if (i < n - 1) {
@@ -105,9 +105,9 @@ int main(int argc, char* argv[]) {
     }
   }
   if (enable_printing) {
-    for (int i = 0; i < n; i++) {
-      indices.at(i) = i;
-    }
+    // for (int i = 0; i < n; i++) {
+    //   indices.at(i) = i;
+    // }
     // PrintVector(FindBucketSizes(encoded, alphabet_size),
     //             "Bucket sizes: ", cell_size);
     // PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
@@ -130,11 +130,10 @@ int main(int argc, char* argv[]) {
   bool is_shit_broke = false;
   try {
     start = clock();
-    BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, &lcp_array);
+    BuildSuffixArray(encoded, alphabet_size, &suffix_array, &lcp_array);
     finish = clock();
     measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
     cerr << "Our time: " << measuredTime << '\n';
-    // BuildSuffixArray(encoded, alphabet_size, 0, &suffix_array, NULL);
   } catch (...) {
     cerr << "shit is broke yo" << endl;
     is_shit_broke = true;

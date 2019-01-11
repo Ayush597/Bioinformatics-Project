@@ -91,34 +91,6 @@ bool IsLMSChar(int offset, const vector<char> &typemap) {
   return typemap.at(offset) == kSStarType;
 }
 
-// bool LMSSubstringsAreEqual(const std::vector<int> &text,
-//                            const std::vector<char> &typemap, int offset_a,
-//                            int offset_b) {
-//   if (offset_a == offset_b) return true;
-//   if (offset_a < 0 || offset_b < 0) return false;
-//   int len = text.size();
-//   if (offset_a == len || offset_b == len) return false;
-
-//   int i = 0;
-//   while (true) {
-//     bool is_a_lms = IsLMSChar(offset_a + i, typemap);
-//     bool is_b_lms = IsLMSChar(offset_b + i, typemap);
-
-//     // if we found our way to the next LMS substring
-//     // then there's no difference between the original
-//     // LMS substrings
-//     if (i > 0 && is_a_lms && is_b_lms) return true;
-
-//     if (is_a_lms != is_b_lms) return false;
-
-//     int first_char = text.at(offset_a + i);
-//     int second_char = text.at(offset_b + i);
-//     if (first_char != second_char) return false;
-
-//     i++;
-//   }
-// }
-
 bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            const std::vector<char> &typemap, int offset_a,
                            int offset_b) {
@@ -180,141 +152,141 @@ int FindMinInRange(const vector<int> &array, int start_index, int end_index) {
   return min;
 }
 
-void EncodeSeam(const vector<int> &bucket_heads,
-                const vector<int> &bucket_tails, const vector<int> &ls_seam,
-                vector<char> *typemap) {
-  for (int i = 0, m = bucket_heads.size(); i < m; i++) {
-    int head_index = bucket_heads.at(i);
-    if (head_index >= (int)(*typemap).size()) {
-      return;
-    }
-    switch ((*typemap).at(head_index)) {
-      case 'L':
-        (*typemap).at(head_index) = '(';
-        break;
-      case 'S':
-        (*typemap).at(head_index) = 's';
-        break;
-      case '*':
-        (*typemap).at(head_index) = '{';
-        break;
-      case '-':
-        (*typemap).at(head_index) = '[';
-        break;
-    }
+// void EncodeSeam(const vector<int> &bucket_heads,
+//                 const vector<int> &bucket_tails, const vector<int> &ls_seam,
+//                 vector<char> *typemap) {
+//   for (int i = 0, m = bucket_heads.size(); i < m; i++) {
+//     int head_index = bucket_heads.at(i);
+//     if (head_index >= (int)(*typemap).size()) {
+//       return;
+//     }
+//     switch ((*typemap).at(head_index)) {
+//       case 'L':
+//         (*typemap).at(head_index) = '(';
+//         break;
+//       case 'S':
+//         (*typemap).at(head_index) = 's';
+//         break;
+//       case '*':
+//         (*typemap).at(head_index) = '{';
+//         break;
+//       case '-':
+//         (*typemap).at(head_index) = '[';
+//         break;
+//     }
 
-    int tail_index = bucket_tails.at(i);
-    if (tail_index >= (int)(*typemap).size()) {
-      return;
-    }
-    switch ((*typemap).at(tail_index)) {
-      case 'L':
-        (*typemap).at(tail_index) = 'l';
-        break;
-      case 'S':
-        (*typemap).at(tail_index) = ')';
-        break;
-      case '*':
-        (*typemap).at(tail_index) = '}';
-        break;
-      case '-':
-        (*typemap).at(tail_index) = ']';
-        break;
-    }
+//     int tail_index = bucket_tails.at(i);
+//     if (tail_index >= (int)(*typemap).size()) {
+//       return;
+//     }
+//     switch ((*typemap).at(tail_index)) {
+//       case 'L':
+//         (*typemap).at(tail_index) = 'l';
+//         break;
+//       case 'S':
+//         (*typemap).at(tail_index) = ')';
+//         break;
+//       case '*':
+//         (*typemap).at(tail_index) = '}';
+//         break;
+//       case '-':
+//         (*typemap).at(tail_index) = ']';
+//         break;
+//     }
 
-    int seam_index = ls_seam.at(i);
-    if (seam_index >= (int)(*typemap).size()) {
-      return;
-    }
-    switch ((*typemap).at(seam_index)) {
-      case 'L':
-        (*typemap).at(seam_index) = '<';
-        break;
-      case 'S':
-        (*typemap).at(seam_index) = '>';
-        break;
-      case '*':
-        (*typemap).at(seam_index) = '+';
-        break;
-      case '-':
-        (*typemap).at(seam_index) = '|';
-        break;
-    }
-  }
-}
+//     int seam_index = ls_seam.at(i);
+//     if (seam_index >= (int)(*typemap).size()) {
+//       return;
+//     }
+//     switch ((*typemap).at(seam_index)) {
+//       case 'L':
+//         (*typemap).at(seam_index) = '<';
+//         break;
+//       case 'S':
+//         (*typemap).at(seam_index) = '>';
+//         break;
+//       case '*':
+//         (*typemap).at(seam_index) = '+';
+//         break;
+//       case '-':
+//         (*typemap).at(seam_index) = '|';
+//         break;
+//     }
+//   }
+// }
 
-vector<int> TypeCount(vector<char> &typemap) {
-  vector<int> type_counts(3, 0);
+// vector<int> TypeCount(vector<char> &typemap) {
+//   vector<int> type_counts(3, 0);
 
-  for (int i = 0, n = typemap.size(); i < n; i++) {
-    switch (typemap.at(i)) {
-      case 'L':
-      case '<':
-      case '(':
-      case 'l':
-        type_counts.at(0)++;
-        break;
-      case 'S':
-      case '>':
-      case ')':
-      case 's':
-        type_counts.at(1)++;
-        break;
-      case '*':
-      case '+':
-      case '{':
-      case '}':
-        type_counts.at(2)++;
-        break;
-    }
-  }
+//   for (int i = 0, n = typemap.size(); i < n; i++) {
+//     switch (typemap.at(i)) {
+//       case 'L':
+//       case '<':
+//       case '(':
+//       case 'l':
+//         type_counts.at(0)++;
+//         break;
+//       case 'S':
+//       case '>':
+//       case ')':
+//       case 's':
+//         type_counts.at(1)++;
+//         break;
+//       case '*':
+//       case '+':
+//       case '{':
+//       case '}':
+//         type_counts.at(2)++;
+//         break;
+//     }
+//   }
 
-  return type_counts;
-}
+//   return type_counts;
+// }
 
-void PrintPerBucket(const vector<int> &values, const vector<char> &typemap,
-                    const vector<int> &bucket_heads,
-                    const vector<int> &bucket_tails, int cell_size,
-                    int debug_depth) {
-  int n = values.size();
-  int m = bucket_heads.size();
-  for (int i = 0; i < m; i++) {
-    int bucket_start = bucket_heads.at(i);
-    int bucket_end = bucket_tails.at(i);
-    if (bucket_end < bucket_start || bucket_end >= n) {
-      break;
-    }
-    vector<int> SA_subvector(values.begin() + bucket_start,
-                             values.begin() + bucket_end + 1);
-    vector<char> types_subvector(typemap.begin() + bucket_start,
-                                 typemap.begin() + bucket_end + 1);
-    string s = to_string(i);
-    PrintVector(SA_subvector, s, cell_size, debug_depth);
-    PrintVector(types_subvector, "", cell_size, debug_depth);
-  }
-}
+// void PrintPerBucket(const vector<int> &values, const vector<char> &typemap,
+//                     const vector<int> &bucket_heads,
+//                     const vector<int> &bucket_tails, int cell_size,
+//                     int debug_depth) {
+//   int n = values.size();
+//   int m = bucket_heads.size();
+//   for (int i = 0; i < m; i++) {
+//     int bucket_start = bucket_heads.at(i);
+//     int bucket_end = bucket_tails.at(i);
+//     if (bucket_end < bucket_start || bucket_end >= n) {
+//       break;
+//     }
+//     vector<int> SA_subvector(values.begin() + bucket_start,
+//                              values.begin() + bucket_end + 1);
+//     vector<char> types_subvector(typemap.begin() + bucket_start,
+//                                  typemap.begin() + bucket_end + 1);
+//     string s = to_string(i);
+//     PrintVector(SA_subvector, s, cell_size, debug_depth);
+//     PrintVector(types_subvector, "", cell_size, debug_depth);
+//   }
+// }
 
-bool CheckUnique(vector<int> vec) {
-  vector<int> copy(vec);
-  std::sort(copy.begin(), copy.end());
-  for (int i = 1, n = copy.size(); i < n; i++) {
-    if (copy.at(i) >= 0 && copy.at(i - 1) == copy.at(i)) {
-      PrintVector(copy, "sorted: ", 4);
-      int prev_value = -1;
-      for (int i = 0, n = copy.size(); i < n; i++) {
-        int curr_value = copy.at(i);
-        if (curr_value == -1) {
-          continue;
-        }
-        if (curr_value != prev_value + 1) {
-          for (int j = prev_value + 1; j < curr_value; j++) {
-            cout << j << endl;
-          }
-        }
-        prev_value = curr_value;
-      }
-      return false;
-    }
-  }
-  return true;
-}
+// bool CheckUnique(vector<int> vec) {
+//   vector<int> copy(vec);
+//   std::sort(copy.begin(), copy.end());
+//   for (int i = 1, n = copy.size(); i < n; i++) {
+//     if (copy.at(i) >= 0 && copy.at(i - 1) == copy.at(i)) {
+//       PrintVector(copy, "sorted: ", 4);
+//       int prev_value = -1;
+//       for (int i = 0, n = copy.size(); i < n; i++) {
+//         int curr_value = copy.at(i);
+//         if (curr_value == -1) {
+//           continue;
+//         }
+//         if (curr_value != prev_value + 1) {
+//           for (int j = prev_value + 1; j < curr_value; j++) {
+//             cout << j << endl;
+//           }
+//         }
+//         prev_value = curr_value;
+//       }
+//       return false;
+//     }
+//   }
+//   return true;
+// }

@@ -7,7 +7,7 @@
 #include <vector>
 
 void BuildSuffixArray(const std::vector<int> &text, int alphabet_size,
-                      int debug_depth, std::vector<int> *suffix_array,
+                      std::vector<int> *suffix_array,
                       std::vector<int> *lcp_array);
 
 #endif

@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
                 "Bucket sizes: ", cell_size);
     PrintVector(indices, "Index: ", cell_size);
 
-    BuildSuffixArray(input, alphabet_size, 0, &suffix_array, &lcp_array);
+    BuildSuffixArray(input, alphabet_size, &suffix_array, &lcp_array);
 
     SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
     // SuffixArrayToLCP(input, suffix_array, &correct_lcp);
