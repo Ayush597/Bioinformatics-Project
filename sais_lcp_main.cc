@@ -95,28 +95,7 @@ int main(int argc, char* argv[]) {
 
   int cell_size = NumDigits(text.size()) + 1;
 
-  // quick & dirty
-
-  // vector<int> indices(n);
-  vector<char> text_chars(n);
-  for (int i = 0; i < n; i++) {
-    if (i < n - 1) {
-      text_chars[i] = text[i];
-    }
-  }
-  if (enable_printing) {
-    // for (int i = 0; i < n; i++) {
-    //   indices[i] = i;
-    // }
-    // PrintVector(FindBucketSizes(encoded, alphabet_size),
-    //             "Bucket sizes: ", cell_size);
-    // PrintVector(FindSeam(encoded, BuildTypeMap(encoded),
-    //                      FindBucketSizes(encoded, alphabet_size)), "L/S seams: ");
-
-    // PrintVector(indices, "Index: ", cell_size);
-    // PrintVector(text_chars, "Text: ", cell_size);
-    // PrintVector(encoded, "Vector encoding: ", cell_size);
-  } else {
+  if (!enable_printing) {
     allow_printing = false;
     cout.setstate(ios_base::failbit);
   }
@@ -144,58 +123,46 @@ int main(int argc, char* argv[]) {
     cout.clear();
   }
 
-  vector<int> correct_sa(n + 1);
-  vector<int> correct_lcp(n + 1);
-
-  // start sluzbeno novija
-  start = clock();
-  SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
-  finish = clock();
-  measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
-  cerr << "Original time: " << measuredTime << '\n';
-  // end sluzbeno novija
-
-  correct_sa.resize(n);
-  correct_lcp.resize(n);
-  vector<int> correct_rank_lcp(n);
-  if (!is_shit_broke) {
-    SuffixArrayToLCP(encoded, suffix_array, &correct_rank_lcp);
-    PrintVector(suffix_array, "Suffix array: ", cell_size);
-  }
-  PrintVector(correct_sa, "SA should be: ", cell_size);
-  if (!is_shit_broke) {
-    PrintVector(lcp_array, "LCP array: ", cell_size);
-    PrintVector(correct_rank_lcp, "LCP rank: ", cell_size);
-  }
-  PrintVector(correct_lcp, "LCP should be: ", cell_size);
-
-  // vector<int> int_sa(n, 0);
-  // vector<int> encoded_expanded(n);
+  // vector<char> text_chars(n);
   // for (int i = 0; i < n; i++) {
-  //   if (i == n - 1) {
-  //     encoded_expanded[i] = 0;
-  //   } else {
-  //     encoded_expanded[i] = encoded[i] + 1;
+  //   if (i < n - 1) {
+  //     text_chars[i] = text[i];
   //   }
   // }
-  // SAIS_SA(256, encoded_expanded, &int_sa);
-  // PrintVector(int_sa, "int SA: ", cell_size);
+
+  // vector<int> correct_sa(n + 1);
+  // vector<int> correct_lcp(n + 1);
+
+  // // start sluzbeno novija
+  // start = clock();
+  // SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
+  // finish = clock();
+  // measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
+  // cerr << "Original time: " << measuredTime << '\n';
+  // // end sluzbeno novija
+
+  // correct_sa.resize(n);
+  // correct_lcp.resize(n);
+  // if (!is_shit_broke) {
+  //   PrintVector(suffix_array, "Suffix array: ", cell_size);
+  // }
+  // PrintVector(correct_sa, "SA should be: ", cell_size);
+  // if (!is_shit_broke) {
+  //   PrintVector(lcp_array, "LCP array: ", cell_size);
+  // }
+  // PrintVector(correct_lcp, "LCP should be: ", cell_size);
 
   cout.clear();
 
-  if (correct_rank_lcp != correct_lcp) {
-    cout << "Rank is wrong" << endl;
-  }
+  // if (suffix_array == correct_sa) {
+  //   cout << "SA is OK" << endl;
+  // } else {
+  //   cout << "SA is WRONG!" << endl;
+  // }
 
-  if (suffix_array == correct_sa) {
-    cout << "SA is OK" << endl;
-  } else {
-    cout << "SA is WRONG!" << endl;
-  }
-
-  if (lcp_array == correct_lcp) {
-    cout << "LCP is OK" << endl;
-  } else {
-    cout << "LCP is WRONG!" << endl;
-  }
+  // if (lcp_array == correct_lcp) {
+  //   cout << "LCP is OK" << endl;
+  // } else {
+  //   cout << "LCP is WRONG!" << endl;
+  // }
 }
