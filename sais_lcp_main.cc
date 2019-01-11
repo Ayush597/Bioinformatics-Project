@@ -29,7 +29,7 @@ vector<int> EncodeAlphabetically(const string& text) {
   int min_char = *min_element(begin(text), end(text));
 
   for (int i = 0; i < n; i++) {
-    encoded.at(i) = text.at(i) - min_char;
+    encoded[i] = text[i] - min_char;
   }
 
   return encoded;
@@ -44,14 +44,14 @@ vector<int> EncodeAlphabetically(const string& text) {
 
 //   // keep track of characters present in input text
 //   for (int i = 0; i < n; i++) {
-//     present_chars.at(text.at(i)) = 1;
+//     present_chars[text[i]] = 1;
 //   }
 
 //   int current_int_name = 0;
 //   for (int i = 0, n = present_chars.size(); i < n; i++) {
 //     // give names only to characters which are used in input text
-//     if (present_chars.at(i) == 1) {
-//       present_chars.at(i) = current_int_name;
+//     if (present_chars[i] == 1) {
+//       present_chars[i] = current_int_name;
 //       current_int_name++;
 //     }
 //   }
@@ -59,7 +59,7 @@ vector<int> EncodeAlphabetically(const string& text) {
 //   // characters are encoded with a number which represents their lexicographical
 //   // order
 //   for (int i = 0; i < n; i++) {
-//     encoded.at(i) = present_chars.at(text.at(i));
+//     encoded[i] = present_chars[text[i]];
 //   }
 
 //   return encoded;
@@ -101,12 +101,12 @@ int main(int argc, char* argv[]) {
   vector<char> text_chars(n);
   for (int i = 0; i < n; i++) {
     if (i < n - 1) {
-      text_chars.at(i) = text.at(i);
+      text_chars[i] = text[i];
     }
   }
   if (enable_printing) {
     // for (int i = 0; i < n; i++) {
-    //   indices.at(i) = i;
+    //   indices[i] = i;
     // }
     // PrintVector(FindBucketSizes(encoded, alphabet_size),
     //             "Bucket sizes: ", cell_size);
@@ -173,9 +173,9 @@ int main(int argc, char* argv[]) {
   // vector<int> encoded_expanded(n);
   // for (int i = 0; i < n; i++) {
   //   if (i == n - 1) {
-  //     encoded_expanded.at(i) = 0;
+  //     encoded_expanded[i] = 0;
   //   } else {
-  //     encoded_expanded.at(i) = encoded.at(i) + 1;
+  //     encoded_expanded[i] = encoded[i] + 1;
   //   }
   // }
   // SAIS_SA(256, encoded_expanded, &int_sa);

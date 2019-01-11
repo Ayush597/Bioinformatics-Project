@@ -56,16 +56,16 @@ int main(int argc, char* argv[]) {
   vector<int> indices(n);
   if (enable_printing) {
     for (int i = 0; i < n; i++) {
-      indices.at(i) = i;
+      indices[i] = i;
     }
   }
 
   while (true) {
     generate(input.begin(), input.end(), [&]{ return di(dre);});
     for (int i = 0; i < n; i++) {
-      text_chars.at(i) = (char )(input.at(i) + 'a');
+      text_chars[i] = (char )(input[i] + 'a');
     }
-    text_chars.at(n) = 0;
+    text_chars[n] = 0;
     PrintVector(text_chars, "Chars: ", cell_size);
 
     if (test_generation) {
