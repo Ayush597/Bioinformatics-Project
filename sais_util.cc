@@ -6,10 +6,6 @@
 
 using namespace std;
 
-const char kLType = 'L';
-const char kSType = 'S';
-const char kSStarType = '*';
-
 vector<char> BuildTypeMap(const vector<int> &text) {
   int length = text.size();
 
@@ -74,8 +70,7 @@ vector<int> FindSeam(const vector<int> &text, const vector<char> &typemap,
 
   for (int i = 0, n = text.size(); i < n; i++) {
     if (typemap[i] != kLType) continue;
-    int c = text[i];
-    seam_locations[c]++;
+    seam_locations[text[i]]++;
   }
 
   int sum_bucket_size = 1;
@@ -87,10 +82,6 @@ vector<int> FindSeam(const vector<int> &text, const vector<char> &typemap,
   return seam_locations;
 }
 
-bool IsLMSChar(int offset, const vector<char> &typemap) {
-  return typemap[offset] == kSStarType;
-}
-
 bool LMSSubstringsAreEqual(const std::vector<int> &text,
                            const std::vector<char> &typemap, int offset_a,
                            int offset_b) {
@@ -98,18 +89,9 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
   int text_len = text.size();
   int i = 0;
   while (true) {
-    char char_a;
-    if (offset_a + i == text_len) {
-      char_a = '$';
-    } else {
-      char_a = text[offset_a + i];
-    }
-    char char_b;
-    if (offset_b + i == text_len) {
-      char_b = '$';
-    } else {
-      char_b = text[offset_b + i];
-    }
+    char char_a = (offset_a + i == text_len) ? '$' : text[offset_a + i];
+    char char_b = (offset_b + i == text_len) ? '$' : text[offset_b + i];
+
     char type_a = typemap[offset_a + i];
     char type_b = typemap[offset_b + i];
     if (char_a != char_b ||
@@ -129,9 +111,10 @@ bool LMSSubstringsAreEqual(const std::vector<int> &text,
 int CountSameChars(const vector<int> &text, int first_pos_in_text,
                    int second_pos_in_text) {
   int num_same_chars = 0;
+  int n = text.size();
   while (true) {
-    if (first_pos_in_text >= (int)text.size() ||
-        second_pos_in_text >= (int)text.size() ||
+    if (first_pos_in_text >= n ||
+        second_pos_in_text >= n ||
         text[first_pos_in_text] != text[second_pos_in_text]) {
       break;
     }

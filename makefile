@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -O3
+CXXFLAGS = -std=c++11 -O3 -Wall
 
 SAIS_LCP_FILE_NAME = sais_lcp
 SAIS_LCP_MAIN_NAME_EXTENSION = _main
