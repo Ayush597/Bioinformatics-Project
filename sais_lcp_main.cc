@@ -37,6 +37,7 @@ vector<int> EncodeAlphabetically(const string& text) {
 
 int main(int argc, char* argv[]) {
   bool enable_printing = true;
+  bool run_original = false;
   int alphabet_size = 256;
   // Check the number of parameters
   if (argc < 2) {
@@ -54,6 +55,13 @@ int main(int argc, char* argv[]) {
       enable_printing = false;
     }
   } else if (argc == 4) {
+    if (stoi(argv[2]) == 0) {
+      enable_printing = false;
+    }
+    if (stoi(argv[3]) == 1) {
+      run_original = true;
+    }
+  } else if (argc == 5) {
     alphabet_size = stoi(argv[3]);
   }
 
@@ -85,5 +93,52 @@ int main(int argc, char* argv[]) {
     cout.clear();
   }
 
+  if (!run_original) {
+    return 0;
+  }
+
+  int cell_size = NumDigits(text.size()) + 1;
+  vector<char> text_chars(n);
+  for (int i = 0; i < n; i++) {
+    if (i < n - 1) {
+      text_chars[i] = text[i];
+    }
+  }
+
+  vector<int> correct_sa(n + 1);
+  vector<int> correct_lcp(n + 1);
+
+  // // start sluzbeno novija
+  start = clock();
+  SAIS_SA_LCP(text_chars, &correct_sa, &correct_lcp);
+  finish = clock();
+  measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
+  cerr << "Original time: " << measuredTime << '\n';
+  // // end sluzbeno novija
+
+  correct_sa.resize(n);
+  correct_lcp.resize(n);
+  PrintVector(suffix_array, "Suffix array: ", cell_size);
+  PrintVector(correct_sa, "SA should be: ", cell_size);
+  PrintVector(lcp_array, "LCP array: ", cell_size);
+  PrintVector(correct_lcp, "LCP should be: ", cell_size);
+
   cout.clear();
+
+  if (suffix_array == correct_sa) {
+    cout << "SA is OK" << endl;
+  } else {
+    cout << "SA is WRONG!" << endl;
+  }
+
+  vector<int> lcp_arr_test(lcp_array.size());
+  for (int i = 0, nn = lcp_array.size(); i < nn; i++) {
+    lcp_arr_test[i] = lcp_array[i];
+  }
+
+  if (lcp_arr_test == correct_lcp) {
+    cout << "LCP is OK" << endl;
+  } else {
+    cout << "LCP is WRONG!" << endl;
+  }
 }
