@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "sais.h"
+#include "sais_new.h"
 
 using namespace std;
 
@@ -122,7 +122,7 @@ void SuffixArrayToLCP(const vector<int> &text, const vector<int> &suffix_array,
 
 void SAIS_SA_LCP(const vector<char> &text, vector<int> *suffix_array, vector<int> *lcp_array) {
   int n = text.size();
-  sais((unsigned char *)text.data(), (*suffix_array).data(), (*lcp_array).data(), n);
+  sais_new((unsigned char *)text.data(), (*suffix_array).data(), (*lcp_array).data(), n);
 }
 
 void SAIS_SA(int alphabet_size, const vector<int> &text, vector<int> *suffix_array) {

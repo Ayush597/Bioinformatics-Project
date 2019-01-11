@@ -24,7 +24,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "sais.h"
+#include "sais_new.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1026,7 +1026,7 @@ static sais_index_type sais_main(
 
 /*---------------------------------------------------------------------------*/
 
-int sais(unsigned char *T, int *SA, int *LCP, int n) {
+int sais_new(unsigned char *T, int *SA, int *LCP, int n) {
   if ((T == NULL) || (SA == NULL) || (LCP == NULL) || (n < 0)) {
     return -1;
   }

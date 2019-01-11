@@ -25,13 +25,13 @@ all: $(SAIS_LCP_MAIN_OUT) $(TEST_OUT)
 # $+: similar to $^, but includes duplicates.
 # $?: the names of all prerequisites that are newer than the target, separated by spaces.
 
-$(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o sa_to_lcp.o sais_util.o sais.o
+$(SAIS_LCP_MAIN_OUT): sais_lcp_main.o sais_lcp.o sa_to_lcp.o sais_util.o sais_new.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(SAIS_LCP_MAIN_FILE_NAME).o: sais_lcp_main.cc sais_lcp.h sa_to_lcp.h sais_util.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
-$(TEST_OUT): test.o sais_lcp.o sa_to_lcp.o sais_util.o sais.o
+$(TEST_OUT): test.o sais_lcp.o sa_to_lcp.o sais_util.o sais_new.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(TEST_FILE_NAME).o: test.cc sais_lcp.h sa_to_lcp.h sais_util.h
@@ -43,12 +43,12 @@ sais_lcp.o: sais_lcp.cc sais_lcp.h sais_util.h sa_to_lcp.h
 sais_util.o: sais_util.cc sais_util.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
-sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h sais.h
+sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h sais_new.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
-sais.o: sais.c sais.h
-	g++ -std=c++11 -c sais.c
+sais_new.o: sais_new.c sais_new.h
+	g++ -std=c++11 -c sais_new.c
 
 clean:
 	$(RM) -f $(SAIS_LCP_MAIN_OUT) $(TEST_OUT) \
-			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais.o
+			sais_lcp_main.o test.o sais_lcp.o sais_util.o sa_to_lcp.o sais_new.o
