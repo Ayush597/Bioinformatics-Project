@@ -51,27 +51,20 @@ int main(int argc, char* argv[]) {
   // Check the number of parameters
   if (argc < 2) {
     // Tell the user how to run the program
-    cerr << "Usage: " << argv[0] << " DATA_PATH ENABLE_PRINTING ALPHABET_SIZE" << endl
+    cerr << "Usage: " << argv[0] << " DATA_PATH ENABLE_PRINTING RUN_OWN RUN_ORIGINAL" << endl
          << "\tDATA_PATH - path to a .txt file containing a single line of text"
          << endl << "\tENABLE_PRINTING - if steps should be printed"
-         << "\tALPHABET_SIZE - (optional) size of the alphabet";
+         << endl << "\tRUN_ORIGINAL - (optional) if original algorithm should be run (defaults to 0)";
     /* "Usage messages" are a conventional way of telling the user
      * how to run a program if they enter the command incorrectly.
      */
     return 1;
-  } else if (argc == 3) {
-    if (stoi(argv[2]) == 0) {
+  }
+  if (argc > 2 && stoi(argv[2]) == 0) {
       enable_printing = false;
-    }
-  } else if (argc == 4) {
-    if (stoi(argv[2]) == 0) {
-      enable_printing = false;
-    }
-    if (stoi(argv[3]) == 1) {
-      run_original = true;
-    }
-  } else if (argc == 5) {
-    alphabet_size = stoi(argv[3]);
+  }
+  if (argc > 3 && stoi(argv[3]) == 1) {
+    run_original = true;
   }
 
   string filename = argv[1];
