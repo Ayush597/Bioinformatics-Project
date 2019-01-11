@@ -93,8 +93,6 @@ int main(int argc, char* argv[]) {
 
   vector<int> encoded = EncodeAlphabetically(text);
 
-  int cell_size = NumDigits(text.size()) + 1;
-
   if (!enable_printing) {
     allow_printing = false;
     cout.setstate(ios_base::failbit);
@@ -106,23 +104,18 @@ int main(int argc, char* argv[]) {
   clock_t start, finish;
   double measuredTime;
 
-  bool is_shit_broke = false;
-  try {
-    start = clock();
-    BuildSuffixArray(encoded, alphabet_size, &suffix_array, &lcp_array);
-    finish = clock();
-    measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
-    cerr << "Our time: " << measuredTime << '\n';
-  } catch (...) {
-    cerr << "shit is broke yo" << endl;
-    is_shit_broke = true;
-  }
+  start = clock();
+  BuildSuffixArray(encoded, alphabet_size, &suffix_array, &lcp_array);
+  finish = clock();
+  measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
+  cerr << "Our time: " << measuredTime << '\n';
 
   if (enable_printing) {
     allow_printing = true;
     cout.clear();
   }
 
+  // int cell_size = NumDigits(text.size()) + 1;
   // vector<char> text_chars(n);
   // for (int i = 0; i < n; i++) {
   //   if (i < n - 1) {
@@ -143,13 +136,9 @@ int main(int argc, char* argv[]) {
 
   // correct_sa.resize(n);
   // correct_lcp.resize(n);
-  // if (!is_shit_broke) {
-  //   PrintVector(suffix_array, "Suffix array: ", cell_size);
-  // }
+  // PrintVector(suffix_array, "Suffix array: ", cell_size);
   // PrintVector(correct_sa, "SA should be: ", cell_size);
-  // if (!is_shit_broke) {
-  //   PrintVector(lcp_array, "LCP array: ", cell_size);
-  // }
+  // PrintVector(lcp_array, "LCP array: ", cell_size);
   // PrintVector(correct_lcp, "LCP should be: ", cell_size);
 
   cout.clear();
