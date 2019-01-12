@@ -1,10 +1,10 @@
+#include <time.h>
 #include <algorithm>
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <sstream>
-#include <time.h>
-#include <cassert>
 
 #include "sa_to_lcp.h"
 #include "sais_lcp.h"
@@ -14,16 +14,19 @@ using namespace std;
 
 bool allow_printing = true;
 
+/* Author: Juraj
+ * Loads text from file into a vector and returns it.
+ */
 vector<char> LoadFromFileToVector(const string& filename) {
   ifstream file(filename);
 
   if (file.eof() || file.fail()) {
-    throw -1;
+    throw - 1;
   }
 
   file.seekg(0, ios_base::end);
   streampos fileSize = file.tellg();
-  vector<char> vec((unsigned int) fileSize);
+  vector<char> vec((unsigned int)fileSize);
 
   file.seekg(0, ios_base::beg);
   file.read(&vec[0], fileSize);
@@ -31,24 +34,35 @@ vector<char> LoadFromFileToVector(const string& filename) {
   return vec;
 }
 
+
+/* Authors: Juraj, Leon, Luka
+ * Entry point for the program and its main function. Three command line
+ * arguments are used:
+ * 1) path to a file containing the input text
+ * 2) whether output should be printed (defaults to 0)
+ * 3) whether the original implementation should be run (default to 0)
+ */
 int main(int argc, char* argv[]) {
-  bool enable_printing = true;
+  bool enable_printing = false;
   bool run_original = false;
   int alphabet_size = 256;
   // Check the number of parameters
   if (argc < 2) {
     // Tell the user how to run the program
-    cerr << "Usage: " << argv[0] << " DATA_PATH ENABLE_PRINTING RUN_OWN RUN_ORIGINAL" << endl
+    cerr << "Usage: " << argv[0]
+         << " DATA_PATH ENABLE_PRINTING RUN_OWN RUN_ORIGINAL" << endl
          << "\tDATA_PATH - path to a .txt file containing a single line of text"
-         << endl << "\tENABLE_PRINTING - if steps should be printed"
-         << endl << "\tRUN_ORIGINAL - (optional) if original algorithm should be run (defaults to 0)";
+         << endl
+         << "\tENABLE_PRINTING - if steps should be printed" << endl
+         << "\tRUN_ORIGINAL - (optional) if original algorithm should be run "
+            "(defaults to 0)";
     /* "Usage messages" are a conventional way of telling the user
      * how to run a program if they enter the command incorrectly.
      */
     return 1;
   }
   if (argc > 2 && stoi(argv[2]) == 0) {
-      enable_printing = false;
+    enable_printing = false;
   }
   if (argc > 3 && stoi(argv[3]) == 1) {
     run_original = true;
