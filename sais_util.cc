@@ -38,8 +38,8 @@ void FindBucketTails(const vector<int> &bucket_sizes,
   }
 }
 
-/* Author: Luka
- * Finds the minimum value in the array between the give indices. Both indices
+/* Author: Juraj
+ * Finds the minimum value in the array between the given indices. Both indices
  * are inclusive and negative values are ignored (a negative value represents a
  * location where the LCP value hasn't been calculated).
  */

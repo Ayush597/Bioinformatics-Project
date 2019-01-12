@@ -81,9 +81,9 @@ vector<int> FindSeam(const vector<T> &text, const vector<char> &typemap,
   return seam_locations;
 }
 
-/* Author: Luka
+/* Author: Juraj
  * Naively calculates the LCP of two suffixes (locations in the text) by
- * counting the common consecutive characetrs. This naive calculation is
+ * counting the common consecutive characters. This naive calculation is
  * sufficient at the L/S seam and keeps O(n) time complexity.
  */
 template <typename T>
