@@ -1,0 +1,91 @@
+\documentclass[times, utf8, proizvoljni, numeric]{fer}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{tablefootnote}
+
+\renewcommand\theadfont{\bfseries}
+
+\begin{document}
+
+\nocite{*}
+
+% TODO: Navedite naslov rada.
+\title{Određivanje LCP polja korištenjem modificiranog algoritma SA-IS}
+
+% TODO: Navedite vaše ime i prezime.
+\author{Juraj Juričić, Leon Luttenberger i Luka Suman}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Uvod}
+Sufiksno polje je vrlo važna struktura podataka kod indeksiranja teksta. Može se koristiti za (egzaktnu i parcijalnu) usporedbu teksta ili kompresiju podataka, kao i za izgradnju kompleksnijih indeksa poput sufiksnog stabla. U svim ovim primjenama, uz sufiksno polje potrebno je i polje najduljih zajedničkih prefiksa (engl. \textit{longest common prefixes -- LCP}) \citep{fischer2011inducing}.
+
+LCP polje se može konstruirati u linearnom vremenu koristeći algoritam koji su predložili Kasai et al.\citep{kasai2001linear}, ali taj algoritam se nije mogao uspoređivati s performansama brzih algoritama za izgradnju sufiksnog polja.
+
+Budući da se te dvije strukture često koriste skupa, u svojem radu \citep{fischer2011inducing}, Fischer izlaže kako se brzi algoritam induciranog sortiranja može preinačiti da istovremeno gradi i LCP polje.
+
+U sklopu ovoga rada napravili smo našu implementaciju tog algoritma te usporedili dobivene rezultate s obzirom na točnost, brzinu i utrošak memorije.
+
+\chapter{Opis algoritma}
+Opis.
+
+\chapter{Primjer izvođenja algoritma}
+Primjer.
+
+\chapter{Mjerenja i rezultati testiranja}
+
+Izlaz algoritma je ispravan na svim provjerenim ulaznim skupovima -- izlaz je uspoređen s izlazom originalne implementacije algoritma\citep{origimpl}.
+
+Rezultati mjerenja brzine i utroška memorije vidljivi su u tablici \ref{mjerenja}.
+
+Sva su mjerenja rađena na računalu s \textbf{CPU Intel Core i7-7700HQ}, \textbf{8 GB RAM} i \textbf{Linux Ubuntu 16.04}.
+
+Sva mjerenja vremena su vršena 100 puta uzastopno te je rezultat uprosječen. Maksimalno relativno odstupanje među mjerenjima trajanja izvođenja nikad nije bilo veće od 10\%.
+
+Mjerenja utroška memorije vršena su pomoću programskog paketa \textit{Valgrind} i \textit{Massif heap profiler} te je u obzir uzimana maksimalna potrošnja memorije (engl. \textit{peak memory usage}).
+
+Iz mjerenja je vidljivo da naša implementacija algoritma postaje lošija što je alfabet veći: za manje alfabete (do 5 znakova -- prva 4 skupa) je brzina izvođenja i utrošak memorije unutar 100\% od originalne implementacije. S druge strane, s većim alfabetom (A-Z) utrošak memorije prelazi 100\%.
+
+\pagebreak
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+\thead{Ulazni skup}             & \thead{Veličina \\ datoteke} & \thead{Naša \\ impl.} & \thead{Orig. \\ impl.} & \thead{Novija \\ impl.} & \thead{Razlika} &                               \\ \hline
+\multirow{2}{*}{E. coli} & \multirow{2}{*}{4.797.285}
+   & 1,16  & 0,60  & 0,61  & 92\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 85,77 & 43,18 & 43,18 & 98\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{A. hydrogenalis} & \multirow{2}{*}{2.482.366}
+   & 0.38  & 0,24  & 0,23  & 63\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 43,45 & 22,35 & 22,35 & 94\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{N. crassa} & \multirow{2}{*}{575.384}
+   & 0,073 & 0,057 & 0,056 & 28\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 10,28 & 5,18  & 5,18  & 94\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{Synthentic A-E\tablefootnote{Skup nasumično generiranih znakova alfabeta A-E}} & \multirow{2}{*}{1.000.000}
+   & 0,20  & 0,14  & 0,13  & 43\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 18,97 & 9,00  & 9,00  & 110\% & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{Synthentic A-Z\tablefootnote{Skup nasumično generiranih znakova alfabeta A-Z}} & \multirow{2}{*}{500.000}
+   & 1,51  & 0,63  & 0,63  & 139\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 105,2 & 45,00 & 45,00 & 134\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{Shakespeare \citep{shakespeare}\tablefootnote{Zbir svih Shakespeareovih djela \citep{shakespeare}}} & \multirow{2}{*}{5.458.199}
+   & 1,29  & 0,55  & 0,55  & 134\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 100,5 & 49,13 & 49,13 & 105\%  & \thead{Memorija (MB)} \\ \hline
+\end{tabular}
+\caption{Rezultati mjerenja}
+\label{mjerenja}
+\end{table}
+
+\chapter{Zaključak}
+Zaključak.
+
+\bibliography{izvjestaj}
+\bibliographystyle{fer}
+
+\chapter{Sažetak}
+Sažetak.
+
+\end{document}

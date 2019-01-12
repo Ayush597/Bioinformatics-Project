@@ -69,3 +69,6 @@ data/
 # Massif outs
 massif.out.*
 
+# Original new impl
+/original-new
+
