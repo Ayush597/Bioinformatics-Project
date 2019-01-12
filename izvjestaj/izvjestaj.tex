@@ -28,13 +28,154 @@ LCP polje se može konstruirati u linearnom vremenu koristeći algoritam koji su
 
 Budući da se te dvije strukture često koriste skupa, u svojem radu \citep{fischer2011inducing}, Fischer izlaže kako se brzi algoritam induciranog sortiranja može preinačiti da istovremeno gradi i LCP polje.
 
-U sklopu ovoga rada napravili smo našu implementaciju tog algoritma te usporedili dobivene rezultate s obzirom na točnost, brzinu i utrošak memorije.
+U sklopu ovoga rada napravili smo našu implementaciju tog algoritma te usporedili dobivene rezultate s obzirom na brzinu izvođenja i utrošak memorije.
 
 \chapter{Opis algoritma}
-Opis.
+Ulaz u algoritam jest tekst $T$ koji sadrži $n$ znakova. Pritom se podrazumijeva (ne dodaje se eksplicitno) terminalni znak $\$$ na kraju teksta $T$ (pozicija $n-1$). Sufiks $S_{i}$ jest podniz od $T$ koji sadrži znakove od pozicije $i$ (uključeno) do kraja teksta ($T_{i...n}$). Potrebno je izračunati sufiksno polje $SA$ i $LCP$ polje. $SA$ je jednake duljine kao ulazni tekst ($n$) i sadrži permutaciju indeksa $i$ sufiksa $S_{i}$ iz teksta $T$ u leksikografsko sortiranom poretku. Usporedba se radi znak po znak i kraći sufiksi su manji od duljih. $LCP$ polje je isto duljine $n$ i sadrži duljine najduljih zajedničkih prefiksa od sufiksa koji su susjedni u $SA$.
+
+Prvi korak algoritma jest određivanje tipova svih sufiksa. Sufiks $S_{i}$ je tipa $S$ (engl. \textit{smaller}) ako leksikografski prethodi sljedećem sufiksu $S_{i+1}$, a inače je tipa L (engl. \textit{larger}). Dodatno, sufiks tipa $S$ je ujedno i tipa $S^*$ (još i oznaka $LMS$ od engl. \textit{left most S}) ako je sufiks lijevo od njega $L$ tipa. To je zapravo prvi $S$ u svakom mogućem uzastopnom nizu $S$-ova. Algoritam kreće od kraja teksta. Terminalni znak je tipa $LMS$, a sufiks lijevo od njega je $L$ tipa jer terminalni znak prethodi svim ostalima. Zatim, sufiks $S_{i}$ je tipa $S$ ako je $T_{i}$ $<_{lex}$ $T_{i+1}$ ili ako je $T_{i}$ $=_{lex}$ $T_{i+1}$ i $S_{i+1}$ je tipa. Inače, $S_{i}$ je tipa $L$ te ako je $S_{i+1}$ tipa $S$ onda $S_{i+1}$ postaje tipa $LMS$.
+
+Zatim se koristi sortiranje po pretincima (engl. \textit{bucket sort}). $SA$ se podijeli u pretince koji sadrže sufikse koji počinju s istim znakom. Broj ponavljanja određenog znaka u $T$ određuje veličinu njegovog pretinca. Prvi pretinac je uvijek veličine $1$ jer pripada terminalnom znaku (koji prethodi svima). Svaki pretinac se sastoji od lijeve polovice koja će sadržavati $L$-sufikse te desne polovice koja će sadržavati $S$-sufikse ($LMS$ su isto $S$). $L$-sufiksi se dodaju na početak pretinca i svaki sljedeći se dodaje desno od zadnje dodanog $L$-sufiksa u istom pretincu. $S$-sufiksi se dodaju na kraj pretinca i svaki sljedeći se dodaje lijevo od zadnje dodanog $S$-sufiksa (ili $LMS$) u istom pretincu. Mjesto unutar pretinca gdje se susreću zadnji (skroz desni) $L$-sufiks i prvi (skroz lijevi) $S$-sufiks zove se $L/S$ šav (engl. \textit{L/S seam}).
+
+$SA$ se prvo popuni s $LMS$-sufiksima gdje njihov prvi znak određuje u kojem pretincu će završiti. Zatim se pretinci u $SA$ popune s $L$-sufiksima koristeći inducirano sortiranje (engl. \textit{induced sorting}) u desno. Počevši od pozicije $i=0$ u sufiksnom polju $SA$, ako je sufiks $S_{SA[i]-1}$ tipa $L$ onda se $SA[i]-1$ stavi u $c$-pretinac ($c=T_{SA[i]-1}$). Na sličan način se induciranim sortiranjem u lijevo sortiraju $S$-sufiksi. Počevši od pozicije $i=n-1$, ako je $S_{SA[i]-1}$ tipa $S$ onda se $SA[i]-1$ stavi u $c$-pretinac. Ovaj postupak može pomiješati $S$ i $LMS$ sufikse (to je i cilj).
+
+Sljedeći korak jest napraviti sažetak (engl. \textit{summary}) dobivenog $SA$. Počevši od početka $SA$, odredi se $LMS$-naziv svakog $LMS$-sufiksa. Pošto je prvi sufiks u $SA$ uvijek terminalni znak, on dobije $LMS$-naziv jednak $0$ (nazivi su zapravo brojevi). Sljedeći $LMS$-sufiks (ostali tipovi ne dobiju imena) $S_{SA[i]}$ dobiva novo ime ako se njegov $LMS$-podniz (engl. \textit{$LMS$ substring}) razlikuje od $LMS$-podniza prethodnog imenovanog $LMS$-sufiksa. $LMS$-podniz $LMS$-sufiksa $S_{i}$ jest $T_{i...j-1}$ gdje je $j$ pozicija sljedećeg $LMS$-sufiksa u $T$. Dobiveni sažetak $T'$ služi kao ulazni tekst u rekurzivni poziv algoritma. Kako originalni tekst $T$ može sadržavati najviše $n/2$ $LMS$-sufiksa, vrijedi $|T'|<|T|$. Rekurzija prestaje kada se dobiveni sažetak sastoji samo od jedinstvenih imena (brojeva). Tada se $SA'$ odmah dobije sortiranje po pretincima, a $LCP'$ sažetka izračuna se direktno iz $SA'$ korištenjem Kasai algoritma.
+
+Dobiveni $SA'$ određuje točan poredak $LMS$-sufiksa što se iskoristi kako bi se ovaj put točno stavili u pretince u $SA$. Pritom se njihove $LCP'$ vrijednosti moraju skalirati jer se vrijednost $LCP'[k]$ odnosi na podniz $v_{SA'[k]...SA'[k]+LCP'[k]-1}$ unutar $T'$, što zapravo odgovara vrijednosti $\sum_{i=0}^{LCP'[k]-1}|R_{SA[k]+i}|$ koja je određena zbrojem duljina zajedničkih $LMS$-podnizova. Krajnjoj $LCP$ vrijednosti treba dodati i broj zajedničkih znakova nakon zadnjeg zajedničkog $LMS$-podniza.
+
+Na kraj se opet provede ubacivanje $L$-sufiksa te zatim $S$-sufiksa kako bi se dobio konačan $SA$. Pritom se koriste sljedeći dodatni koraci za izračun $LCP$ vrijednosti.
+
+Pretpostavimo da je algoritam ubacio $L$-sufiks $S_{SA[i]-1}$ u $c$-pretinac na poziciju $k$. Ako je to prvi $L$ sufiks u pretincu onda je $LCP[k]=0$. Inače postoji $L$-sufiks $S_{SA[i']-1}$ na poziciji lijevo ($k-1$) koji je stavljen u prethodnoj iteraciji $i'$. $i'$ i $i$ su pozicije sufiksa (to su sufiksi desno od njih u $T$) koji su inducirali sortiranje trenutnih sufiksa na pozicijma $k-1$ i $k$ . Ako su $i'$ i $i$ u različitim pretincima onda $S_{SA[i']}$ i $S_{SA[i]}$ imaju različite početne znakove te je $LCP[k]=1$ jer sufiksi $S_{SA[k-1]}$ i $S_{SA[k]}$ dijele samo početni znak (u istom su pretincu). Inače, ako su $i'$ i $i$ u istom pretincu onda je $LCP[k]=min(LCP[i'+1,i])+1$, a minimum na intervalu promatra samo vrijednosti koje su izračunate ($LCP$ se ne početku napuni s $-1$ i one se ne gledaju kod minimuma). Kod $S$ je isti postupak, razlika je što se gleda $k+1$ i interval je $LCP[i+1,i']$.
+
+Kod postavljanja zadnjeg $L$-sufiksa u pretinac ($L/S$ šav) potrebno je naivnom usporedbom (znak po znak) ažurirati $LCP$ vrijednost između zadnjeg $L$-sufiksa i prvog sljedećeg $LMS$-sufiksa u istom pretincu (ako on postoji). Prilikom postavljanja zadnjeg (prvi lijevi) $S$-sufiksa u pretinac potrebno je naivnom usporedbom izračunati $LCP$ vrijednosti u odnosu na zadnji $L$ sufiks u istom pretincu (ako on postoji) koji se zapravo nalazi odmah lijevo.
 
 \chapter{Primjer izvođenja algoritma}
-Primjer.
+
+Kao ulazni primjer koristit će se niz znakova \textit{baabaabac}. Ulaz se sastoji od 9 znakova kojem se implicitno dodaje terminalni znak (engl. \textit{sentinel}) $\$$ pa je zato $n=10$. Sufiksno polje $SA$ i $LCP$ su jednodimenzionalna polja s $n$ elemenata s početnim vrijednostima $-1$ (bilo koja negativna vrijednost). U nastavku su indeksi, znakovi i tipovi sufiksa u tabličnom prikazu.
+
+\begin{center}
+	\begin{tabular}{l | c c c c c c c c c c |}
+		$i$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+		$T[i]$ & b & a & a & b & a & a & b & a & c & \$ \\
+		$tip[i]$ & L & S* & S & L & S* & S & L & S* & L & S* \\
+	\end{tabular}
+\end{center}
+
+Prvi korak jest stavljanje $LMS$-sufiksa u njihove pretince. Počevši s lijeva, prvi $LMS$ sufiks je na poziciji $1$ i započinje sa znakom $a$ pa on ide na kraj $a$-pretinca. Isto tako je i za $4$ i $7$, a $9$ ide na početak ($\$ <_{lex} \forall c$).
+
+\begin{center}
+\begin{tabular}{l | c | c c c c c | c c c | c |}
+	& $\$$ & & & a & & & & b & & c \\ \hline
+	$SA$ & -1 & -1 & -1 & -1 & -1 & -1 & -1 & -1 & -1 & -1 \\ \hline
+	$1$ na $5$ & -1 & -1 & -1 & -1 & -1 & \textbf{1} & -1 & -1 & -1 & -1 \\
+	$4$ na $4$ & -1 & -1 & -1 & -1 & \textbf{4} & 1 & -1 & -1 & -1 & -1 \\
+	$7$ na $3$ & -1 & -1 & -1 & \textbf{7} & 4 & 1 & -1 & -1 & -1 & -1 \\
+	$9$ na $0$ & \textbf{9} & -1 & -1 & 7 & 4 & 1 & -1 & -1 & -1 & -1 \\
+\end{tabular}
+\end{center}
+
+Sljedeće se ubace $L$-sufiksi, ali na početak pretinaca. Prvo se gleda pozicija $i=0$ u $SA$. $SA[i]=9>0$ pa se gleda $S_{SA[i]-1}$ što je sufiks $c\$$ na poziciji $8$ u $T$. To je $L$-sufiks pa se stavlja u $c$-pretinac. $i=1,2$ se preskaču jer je $SA[i]=-1$. Za $i=3$ gleda se $S_{6}$ i to je $L$-sufiks koji ide u $b$-pretinac. Za $i=4$ u $SA[4]$ je vrijednost $4$. Sufiks $S_{3}$ je tipa $L$ pa se dodaje u $b$-pretinac. Zadnji $L$-sufiks dodajemo za $i=5$.
+
+\begin{center}
+	\begin{tabular}{l | c | c c c c c | c c c | c |}
+		& $\$$ & & & a & & & & b & & c \\ \hline
+		$SA$ & 9 & -1 & -1 & 7 & 4 & 1 & -1 & -1 & -1 & -1 \\ \hline
+		$8$ na $9$ & 9 & -1 & -1 & 7 & 4 & 1 & -1 & -1 & -1 & \textbf{8} \\
+		$6$ na $6$ & 9 & -1 & -1 & 7 & 4 & 1 & \textbf{6} & -1 & -1 & 8 \\
+		$3$ na $7$ & 9 & -1 & -1 & 7 & 4 & 1 & 6 & \textbf{3} & -1 & 8 \\
+		$0$ na $8$ & 9 & -1 & -1 & 7 & 4 & 1 & 6 & 3 & \textbf{0} & 8 \\
+	\end{tabular}
+\end{center}
+
+$S$-sufiksi se dodaju na sličan način, jedino što se počinje od kraja. Pritom je važno uočiti da se mogu pomiješati $S$-sufiksi i $LMS$-sufiksi jer novi sufiksi gaze stare vrijednosti ($7$ preko $7$, $2$ preko $4$ i $5$ preko $7$).
+
+\begin{center}
+	\begin{tabular}{l | c | c c c c c | c c c | c |}
+		& $\$$ & & & a & & & & b & & c \\ \hline
+		$SA$ & 9 & -1 & -1 & 7 & 4 & 1 & 6 & 3 & 0 & 8 \\ \hline
+		$7$ na $5$ & 9 & -1 & -1 & 7 & 4 & \textbf{7} & 6 & 3 & 0 & 8 \\
+		$2$ na $4$ & 9 & -1 & -1 & 7 & \textbf{2} & 7 & 6 & 3 & 0 & 8 \\
+		$5$ na $3$ & 9 & -1 & -1 & \textbf{5} & 2 & 7 & 6 & 3 & 0 & 8 \\
+		$1$ na $2$ & 9 & -1 & \textbf{1} & 5 & 2 & 7 & 6 & 3 & 0 & 8 \\
+		$4$ na $1$ & 9 & \textbf{4} & 1 & 5 & 2 & 7 & 6 & 3 & 0 & 8 \\
+	\end{tabular}
+\end{center}
+
+$LMS$-sufiksi na pozicija $1$ i $4$ imaju jednake $LMS$-podnizove $aab$ pa dobiju isto ime ($1$). Sažetak je zatim $T'=1120$ gdje $0$ označava terminalni znak u sažetku (on se implicitno podrazumijeva). Rekurzivni poziv rješava reducirani problem te vraća polja $SA'$ i $LCP'$.
+
+\begin{center}
+	\begin{tabular}{l | c c c c |}
+		$i$ & 0 & 1 & 2 & 3 \\
+		$T'[i]$ & 1 & 1 & 2 & 0 \\
+		$tip'[i]$ & S & S & S & S* \\
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	\begin{tabular}{l | c | c c | c |}
+		$SA'$ & -1 & -1 & -1 & -1 \\ \hline
+		$LMS$ & \textbf{3} & -1 & -1 & -1 \\
+		$L$ & 3 & -1 & -1 & \textbf{2} \\
+		$S$ & 3 & \textbf{0} & \textbf{1} & 2 \\ \hline
+	\end{tabular}
+\end{center}
+
+Samo je jedan $LMS$-sufiks u $T'$ pa je korak rekurzije trivijalan. Dobivaju se $SA''=[0]$ i $LCP''=[0]$. $SA'$ ostaje isti, a $LCP'$ ima vrijednost $1$ na poziciji 2 jer sufiksi $T'_{SA'[1]}$ i $T'_{SA'[2]}$ dijele jedan znak ($LMS$ naziv $1$) na početku. Preslikavanjem pozicija pomoću $SA'$ dobijemo konačan poredak $LMS$-sufiksa u $SA$ ($SA_{ekv.}[k]=i_{T}[SA'[k]]$). Skaliranjem $LCP'$ dobijemo $LCP$ vrijednosti $LMS$-sufiksa. $LCP'[2]=1$ što odgovara duljini $LMS$-podniza $|aab|=3$, ali još dodatno se provjeri da je $T_{1..4}=T_{4..7}=aabb$ pa je skalirana vrijednost $LCP'_{skal.}=3+1=4$. Iako je $LCP'[3]=0$ što znači da nema zajedničkih $LMS$-podnizova, dodatna pretraga nalazi zajednički znak $T_{4}=T_{7}=a$ pa je $LCP'_{skal.}=1$
+
+\begin{center}
+	\begin{tabular}{l | c c c c |}
+		$T'$ & 1 & 1 & 2 & 0 \\
+		$i_{T}$ & 1 & 4 & 7 & \textbf{9} \\ \hline
+		$SA'$ & \textbf{3} & 0 & 1 & 2 \\
+		$LCP'$ & 0 & 0 & 1 & 0 \\ \hline
+		$SA_{ekv.}$ & \textbf{9} & 1 & 4 & 7 \\
+		$LCP'_{skal.}$ & 0 & 0 & 4 & 1 \\
+	\end{tabular}
+\end{center}
+
+Korištenjem informacija u $SA_{ekv.}$ i $LCP'_{skal.}$ dobiju se prve konačne vrijednosti za $SA$ i $LCP$.
+
+\begin{center}
+	\begin{tabular}{l | c | c c c c c | c c c | c |}
+		& $\$$ & & & a & & & & b & & c \\ \hline
+		$SA$ & \textbf{9} & -1 & -1 & \textbf{1} & \textbf{4} & \textbf{7} & -1 & -1 & -1 & -1 \\
+		$LCP$ & \textbf{0} & -1 & -1 & \textbf{0} & \textbf{4} & \textbf{1} & -1 & -1 & -1 & -1 \\ \hline
+	\end{tabular}
+\end{center}
+
+Opet se ubacuju $L$ te se pritom koriste dodatni koraci za računanje $LCP$ vrijednosti.
+
+\begin{center}
+	\begin{tabular}{l | c | c c c c c | c c c | c |}
+		& $\$$ & & & a & & & & b & & c \\ \hline
+		$SA$ & 9 & -1 & -1 & 1 & 4 & 7 & -1 & -1 & -1 & \textbf{8} \\
+		$LCP$ & 0 & -1 & -1 & 0 & 4 & 1 & -1 & -1 & -1 & \textbf{0} \\ \hline
+		$SA$ & 9 & -1 & -1 & 1 & 4 & 7 & \textbf{0} & -1 & -1 & 8 \\
+		$LCP$ & 0 & -1 & -1 & 0 & 4 & 1 & \textbf{0} & -1 & -1 & 0 \\ \hline
+		$SA$ & 9 & -1 & -1 & 1 & 4 & 7 & 0 & \textbf{3} & -1 & 8 \\
+		$LCP$ & 0 & -1 & -1 & 0 & 4 & 1 & 0 & \textbf{5} & -1 & 0 \\ \hline
+		$SA$ & 9 & -1 & -1 & 1 & 4 & 7 & 0 & 3 & \textbf{6} & 8 \\
+		$LCP$ & 0 & -1 & -1 & 0 & 4 & 1 & 0 & 5 & \textbf{2} & 0 \\ \hline
+	\end{tabular}
+\end{center}
+
+U zadnjem koraku dodaju se $S$-sufiksi i opet se koriste dodatni koraci za $LCP$. U predzadnjem koraku ispod $4$ je $-1$ jer se $LCP$ računa za sljedeću poziciju $k+1$. U zadnjem koraku smo došli na $L/S$ šav, ali nema $L$-sufiksa u pretincu pa je $LCP[1]=0$.
+
+\begin{center}
+	\begin{tabular}{l | c | c c c c c | c c c | c |}
+		& $\$$ & & & a & & & & b & & c \\ \hline
+		$SA$ & 9 & -1 & -1 & 1 & 4 & \textbf{7} & 0 & 3 & 6 & 8 \\
+		$LCP$ & 0 & -1 & -1 & 0 & 4 & 0 & 0 & 5 & 2 & 0 \\ \hline
+		$SA$ & 9 & -1 & -1 & 1 & \textbf{5} & 7 & 0 & 3 & 6 & 8 \\
+		$LCP$ & 0 & -1 & -1 & 0 & 4 & \textbf{1} & 0 & 5 & 2 & 0 \\ \hline
+		$SA$ & 9 & -1 & -1 & \textbf{2} & 5 & 7 & 0 & 3 & 6 & 8 \\
+		$LCP$ & 0 & -1 & -1 & 0 & \textbf{3} & 1 & 0 & 5 & 2 & 0 \\ \hline
+		$SA$ & 9 & -1 & \textbf{4} & 2 & 5 & 7 & 0 & 3 & 6 & 8 \\
+		$LCP$ & 0 & -1 & -1 & \textbf{1} & 3 & 1 & 0 & 5 & 2 & 0 \\ \hline
+		$SA$ & 9 & \textbf{1} & 4 & 2 & 5 & 7 & 0 & 3 & 6 & 8 \\
+		$LCP$ & 0 & \textbf{0} & \textbf{4} & 1 & 3 & 1 & 0 & 5 & 2 & 0 \\ \hline
+	\end{tabular}
+\end{center}
 
 \chapter{Mjerenja i rezultati testiranja}
 
