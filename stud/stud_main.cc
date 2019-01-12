@@ -4,6 +4,8 @@
 #include "stud_sais.h"
 #include <iostream>
 
+#define DO_ORIGINAL 0
+
 bool compare_solutions(const int *arr1, const int *arr2, int n) {
 	for (int i = 0; i < n; i++)
 	if (arr1[i] != arr2[i]) {
@@ -84,6 +86,10 @@ int main(int argc, const char *argv[]) {
 	double myTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
 	printf("Time: %.4f sec\n", myTime);
 	std::cerr << "Student time: " << myTime << "\n";
+
+	if (!DO_ORIGINAL) {
+		return 0;
+	}
 
 	printf("SA-IS LCP original - start...\n");
 	start = clock();

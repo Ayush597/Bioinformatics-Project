@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 -g
+CXXFLAGS = -Wall -std=c++11 -g -O3
 
 all: stud_main.exe
 
