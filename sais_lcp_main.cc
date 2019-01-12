@@ -31,19 +31,6 @@ vector<char> LoadFromFileToVector(const string& filename) {
   return vec;
 }
 
-vector<char> EncodeVectorAlphabetically(const vector<char>& chars) {
-  int n = chars.size();
-  vector<char> encoded(n);
-
-  int min_char = *min_element(begin(chars), end(chars));
-
-  for (int i = 0; i < n; i++) {
-    encoded[i] = chars[i] - min_char;
-  }
-
-  return encoded;
-}
-
 int main(int argc, char* argv[]) {
   bool enable_printing = true;
   bool run_original = false;
@@ -71,8 +58,6 @@ int main(int argc, char* argv[]) {
   vector<char> text = LoadFromFileToVector(filename);
   int n = text.size() + 1;
 
-  vector<char> encoded = EncodeVectorAlphabetically(text);
-
   if (!enable_printing) {
     allow_printing = false;
     cout.setstate(ios_base::failbit);
@@ -85,7 +70,7 @@ int main(int argc, char* argv[]) {
   double measuredTime;
 
   start = clock();
-  BuildSuffixArray(encoded, alphabet_size, &suffix_array, &lcp_array);
+  BuildSuffixArray(text, alphabet_size, &suffix_array, &lcp_array);
   finish = clock();
   measuredTime = (double)(finish - start) / (double)CLOCKS_PER_SEC;
   cerr << "Our time: " << measuredTime << '\n';
