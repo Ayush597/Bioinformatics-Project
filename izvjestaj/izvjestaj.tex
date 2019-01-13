@@ -45,7 +45,7 @@ Dobiveni $SA'$ određuje točan poredak $LMS$-sufiksa što se iskoristi kako bi 
 
 Na kraj se opet provede ubacivanje $L$-sufiksa te zatim $S$-sufiksa kako bi se dobio konačan $SA$. Pritom se koriste sljedeći dodatni koraci za izračun $LCP$ vrijednosti.
 
-Pretpostavimo da je algoritam ubacio $L$-sufiks $S_{SA[i]-1}$ u $c$-pretinac na poziciju $k$. Ako je to prvi $L$ sufiks u pretincu onda je $LCP[k]=0$. Inače postoji $L$-sufiks $S_{SA[i']-1}$ na poziciji lijevo ($k-1$) koji je stavljen u prethodnoj iteraciji $i'$. $i'$ i $i$ su pozicije sufiksa (to su sufiksi desno od njih u $T$) koji su inducirali sortiranje trenutnih sufiksa na pozicijma $k-1$ i $k$ . Ako su $i'$ i $i$ u različitim pretincima onda $S_{SA[i']}$ i $S_{SA[i]}$ imaju različite početne znakove te je $LCP[k]=1$ jer sufiksi $S_{SA[k-1]}$ i $S_{SA[k]}$ dijele samo početni znak (u istom su pretincu). Inače, ako su $i'$ i $i$ u istom pretincu onda je $LCP[k]=min(LCP[i'+1,i])+1$, a minimum na intervalu promatra samo vrijednosti koje su izračunate ($LCP$ se ne početku napuni s $-1$ i one se ne gledaju kod minimuma). Kod $S$ je isti postupak, razlika je što se gleda $k+1$ i interval je $LCP[i+1,i']$.
+Pretpostavimo da je algoritam ubacio $L$-sufiks $S_{SA[i]-1}$ u $c$-pretinac na poziciju $k$. Ako je to prvi $L$ sufiks u pretincu onda je $LCP[k]=0$. Inače postoji $L$-sufiks $S_{SA[i']-1}$ na poziciji lijevo ($k-1$) koji je stavljen u prethodnoj iteraciji $i'$. $i'$ i $i$ su pozicije sufiksa (to su sufiksi desno od njih u $T$) koji su inducirali sortiranje trenutnih sufiksa na pozicijama $k-1$ i $k$ . Ako su $i'$ i $i$ u različitim pretincima onda $S_{SA[i']}$ i $S_{SA[i]}$ imaju različite početne znakove te je $LCP[k]=1$ jer sufiksi $S_{SA[k-1]}$ i $S_{SA[k]}$ dijele samo početni znak (u istom su pretincu). Inače, ako su $i'$ i $i$ u istom pretincu onda je $LCP[k]=min(LCP[i'+1,i])+1$, a minimum na intervalu promatra samo vrijednosti koje su izračunate ($LCP$ se ne početku napuni s $-1$ i one se ne gledaju kod minimuma). Kod $S$ je isti postupak, razlika je što se gleda $k+1$ i interval je $LCP[i+1,i']$.
 
 Kod postavljanja zadnjeg $L$-sufiksa u pretinac ($L/S$ šav) potrebno je naivnom usporedbom (znak po znak) ažurirati $LCP$ vrijednost između zadnjeg $L$-sufiksa i prvog sljedećeg $LMS$-sufiksa u istom pretincu (ako on postoji). Prilikom postavljanja zadnjeg (prvi lijevi) $S$-sufiksa u pretinac potrebno je naivnom usporedbom izračunati $LCP$ vrijednosti u odnosu na zadnji $L$ sufiks u istom pretincu (ako on postoji) koji se zapravo nalazi odmah lijevo.
 
@@ -87,7 +87,7 @@ Sljedeće se ubace $L$-sufiksi, ali na početak pretinaca. Prvo se gleda pozicij
 	\end{tabular}
 \end{center}
 
-$S$-sufiksi se dodaju na sličan način, jedino što se počinje od kraja. Pritom je važno uočiti da se mogu pomiješati $S$-sufiksi i $LMS$-sufiksi jer novi sufiksi gaze stare vrijednosti ($7$ preko $7$, $2$ preko $4$ i $5$ preko $7$).
+$S$-sufiksi se dodaju na sličan način, jedino što se počinje od kraja. Pritom je važno uočiti da se mogu pomiješati $S$-sufiksi i $LMS$-sufiksi jer novi sufiksi gaze stare vrijednosti ($7$ preko $1$, $2$ preko $4$ i $5$ preko $7$).
 
 \begin{center}
 	\begin{tabular}{l | c | c c c c c | c c c | c |}
