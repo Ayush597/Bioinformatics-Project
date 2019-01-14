@@ -25,26 +25,26 @@ extern bool allow_printing;
 
 template <typename T>
 void PrintVector(const std::vector<T> &v, const std::string &name = "",
-                 int cell_size = 0, int depth = 0) {
-  if (!allow_printing) {
-    return;
-  }
+                 int cell_size = 0, int depth = 0, std::ostream& out = std::cout) {
+  // if (!allow_printing) {
+  //   return;
+  // }
   for (int i = 0; i < depth; i++) {
-    std::cout << "   ";
+    out << "   ";
   }
-  std::cout << name;
+  out << name;
   int padding = 20 - name.length();
   for (int i = 0; i < padding; i++) {
-    std::cout << ' ';
+    out << ' ';
   }
   for (auto i = v.begin(); i != v.end(); ++i) {
     int number_padding = cell_size - NumDigits(*i);
     for (int i = 0; i < number_padding; i++) {
-      std::cout << ' ';
+      out << ' ';
     }
-    std::cout << *i << "  ";
+    out << *i << "  ";
   }
-  std::cout << std::endl;
+  out << std::endl;
 }
 
 std::vector<int> TypeCount(std::vector<char> &typemap);

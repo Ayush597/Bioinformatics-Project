@@ -47,11 +47,12 @@ int main(int argc, char* argv[]) {
   bool run_original = false;
   int alphabet_size = 256;
   // Check the number of parameters
-  if (argc < 2) {
+  if (argc < 3) {
     // Tell the user how to run the program
     cerr << "Usage: " << argv[0]
-         << " DATA_PATH ENABLE_PRINTING RUN_OWN RUN_ORIGINAL" << endl
-         << "\tDATA_PATH - path to a .txt file containing a single line of text"
+         << " DATA_PATH OUTPUT_PATH ENABLE_PRINTING RUN_ORIGINAL" << endl
+         << "\tDATA_PATH - path to a .txt file containing a single line of text" << endl
+         << "\tOUTPUT_PATH - path to output the suffix array and LCP field to"
          << endl
          << "\tENABLE_PRINTING - if steps should be printed" << endl
          << "\tRUN_ORIGINAL - (optional) if original algorithm should be run "
@@ -61,16 +62,19 @@ int main(int argc, char* argv[]) {
      */
     return 1;
   }
-  if (argc > 2 && stoi(argv[2]) == 0) {
-    enable_printing = false;
-  }
+
   if (argc > 3 && stoi(argv[3]) == 1) {
+    enable_printing = true;
+  }
+  if (argc > 4 && stoi(argv[4]) == 1) {
     run_original = true;
   }
 
   string filename = argv[1];
   vector<char> text = LoadFromFileToVector(filename);
   int n = text.size() + 1;
+
+  string output_file = argv[2];
 
   if (!enable_printing) {
     allow_printing = false;
@@ -94,11 +98,16 @@ int main(int argc, char* argv[]) {
     cout.clear();
   }
 
+  int cell_size = NumDigits(text.size()) + 1;
+  ofstream fout(output_file);
+
+  PrintVector(suffix_array, "Suffix array: ", cell_size, 0, fout);
+  PrintVector(lcp_array, "LCP array: ", cell_size, 0, fout);
+
   if (!run_original) {
     return 0;
   }
 
-  int cell_size = NumDigits(text.size()) + 1;
   vector<char> text_chars(n);
   for (int i = 0; i < n; i++) {
     if (i < n - 1) {
