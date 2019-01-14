@@ -221,12 +221,22 @@ Iz mjerenja je vidljivo da naša implementacija algoritma postaje lošija što j
 \end{table}
 
 \chapter{Zaključak}
-Zaključak.
+
+U sklopu ovoga rada implementirali smo modificirani algoritam induciranog sortiranja za određivanje LPC polje.
+Modificirani algoritam se pokazao ispravnim na svim provjerenim ulaznim skupovima.
+
+Kao što je vidljivo iz rezultata mjerenja, iako naša implementacija dobro radi na stvarnim ulaznim skupovima, na sintetskim skupovima prekoračuje vremensku i memorijsku razliku od $100\%$ u usporedbi s originalnom implementacijom.
+Također, pokazano je kako se brzina izvođenja i utrošak memorije povećava s većim alfabetima.
+
+Implementacija se može poboljšati efikasnijom manipulacijom memorije, odnosno ponovnim iskorištavanjem već alocirane memorije.
+Veliki utrošak memorije i broj alokacija stvara česte promašaje u priručnoj memoriji (\textit{cache miss}), što također povećava vrijeme izvođenja programa.
 
 \bibliography{documentation}
 \bibliographystyle{fer}
 
 \chapter{Sažetak}
-Sažetak.
+
+U sklopu ovoga rada implementiran je i objašnjen modificirani algoritam SA-IS za  određivanja LCP polja.
+Rad algoritma prikazan je na jednostavnom primjeru, te su performanse napisane implementacije uspoređene s originalnom implementacije.
 
 \end{document}
