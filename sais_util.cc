@@ -47,7 +47,7 @@ int FindMinInRange(const vector<LCP_ARRAY_TYPE> &array, int start_index,
                    int end_index) {
   int min = INT_MAX;
   for (int i = start_index; i <= end_index; i++) {
-    if (array[i] < 0 && array[i] < min) {
+    if (array[i] >= 0 && array[i] < min) {
       min = array[i];
     }
   }
