@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "sais_new.h"
+#include "new/sais_new.h"
 
 using namespace std;
 
