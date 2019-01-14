@@ -1,6 +1,6 @@
 # Bionformatics project: Inducing the LCP-Array
 
-* https://arxiv.org/pdf/1101.3448.pdf
+This project is part of the [Bioinformatics course](https://www.fer.unizg.hr/en/course/bio) at the University of Zagreb, Faculty of Electrical Engineering and Computing.
 
 ## Project setup
 
