@@ -131,6 +131,55 @@ Fakultet elektrotehnike i računarstva \\
 \begin{frame}
 \frametitle{Uvod}
 
+\begin{itemize}
+	\item Zadatak: izračunati sufiksno polje $SA$ i $LCP$ polje za zadani tekst $T$
+	\item Sufiks $S_{i}$ je podniz u $T$ od pozicije $i$ do kraja teksta
+	\item $SA$ sadrži leksikografski sortirane indekse svih sufiksa u $T$ 
+	\item LCP (\textit{longest common prefixes}) sadrži broj zajedničkih znakova na početku sufiksa čiji su indeksi susjedni u $SA$
+\end{itemize}
+
+\begin{center}
+	\begin{tabular}{r | c c c c c c c c c c |}
+		$i$ & 0 & \textbf{1} & 2 & 3 & \textbf{4} & 5 & 6 & 7 & 8 & 9 \\ \hline
+		$T[i]$ & b & a & a & b & a & a & b & a & c & \$ \\ \hline
+		$SA[i]$ & 9 & \textbf{1} & \textbf{4} & 2 & 5 & 7 & 0 & 3 & 6 & 8 \\ \hline
+		$LCP[i]$ & 0 & 0 & \textbf{4} & 1 & 3 & 1 & 0 & 5 & 2 & 0 \\ \hline
+	\end{tabular}
+\end{center}
+
+\begin{itemize}
+	\item $SA$ i $LCP$ su važni prilikom indeksiranja teksta
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Algoritam SA-IS}
+
+\begin{itemize}
+	\item Algoritam SA-IS (\textit{SA induced sorting}) klasificira sufikse u $L$ i $S$ tipove
+	\item $S_{i}$ je $S$ tipa ako je leksikografski manji od prethodnog sufiksa $S_{i-1}$
+	\item koristi se sortiranje po prvim znakovima sufiksa (\textit{bucket sorting})
+	\item zatim se inducira (poredak od $S_{i}$ uvjetuje poredak od $S_{i-1}$)
+	\item cijeli algoritam se rekurzivno poziva
+	\item linearna vremenska i prostorna složenost
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Modifikacija za izračun LCP polja}
+
+\begin{itemize}
+	\item SA-IS se modificira kako bi se istodobno računalo i $LCP$ polje
+	\item brže od linearnih algoritama koji iz gotovog $SA$ računaju $LCP$
+	\item ideja je da se $LCP$ vrijednost dvaju sufiksa može zaključiti (inducirati) iz $LCP$ vrijednosti sufiksa koji su uzrokovali njihovo sortiranje
+\end{itemize}
+
 \end{frame}
 
 %------------------------------------------------
