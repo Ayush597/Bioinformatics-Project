@@ -1,0 +1,215 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer Presentation
+% Juraj Juričić
+% Faculty of Electrical Engineering and Computing
+% University of Zagreb
+%
+% Project Presentation
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+
+\documentclass{beamer}
+\usepackage{pdfpages}
+
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{tablefootnote}
+
+\mode<presentation> {
+
+% The Beamer class comes with a number of default slide themes
+% which change the colors and layouts of slides. Below this is a list
+% of all the themes, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+% As well as themes, the Beamer class has a number of color themes
+% for any slide theme. Uncomment each of these in turn to see how it
+% changes the colors of your current slide theme.
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage[utf8]{inputenc}
+\usepackage[croatian]{babel}
+\usepackage{listings}
+\usepackage{textpos}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsthm}
+\usepackage{multirow}
+
+\floatname{algorithm}{Algoritam}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[]{Određivanje LCP polja korištenjem modificiranog algoritma SA-IS} % The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author[]{Juraj Juričić\\Leon Luttenberger\\Luka Suman} % Your name
+\institute[] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+\includegraphics[width=1.7cm]{res/unizg.pdf}\\
+Sveučilište u Zagrebu \\
+Fakultet elektrotehnike i računarstva \\ 
+\medskip
+\textit{Projekt iz Bioinformatike}
+}
+\date{25. siječnja 2019.} % Date, can be changed to a custom date
+
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{Sadržaj} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+%------------------------------------------------
+\section{Uvod} 
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Uvod}
+
+\end{frame}
+
+%------------------------------------------------
+\section{Mjerenja i rezultati} 
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Mjerenja i rezultati}
+
+
+\begin{table}[]
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+\thead{Ulazni skup}             & \thead{Veličina \\ datoteke} & \thead{Naša \\ impl.} & \thead{Orig. \\ impl.} & \thead{Novija \\ impl.} & \thead{Razlika} &                               \\ \hline
+\multirow{2}{*}{E. coli} & \multirow{2}{*}{4.797.285}
+   & 1,16  & 0,60  & 0,61  & 92\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 85,77 & 43,18 & 43,18 & 98\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{A. hydrogenalis} & \multirow{2}{*}{2.482.366}
+   & 0.38  & 0,24  & 0,23  & 63\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 43,45 & 22,35 & 22,35 & 94\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{N. crassa} & \multirow{2}{*}{575.384}
+   & 0,073 & 0,057 & 0,056 & 28\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 10,28 & 5,18  & 5,18  & 94\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{Synthentic A-E} & \multirow{2}{*}{1.000.000}
+   & 0,20  & 0,14  & 0,13  & 43\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 18,97 & 9,00  & 9,00  & 110\% & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{Synthentic A-Z} & \multirow{2}{*}{500.000}
+   & 1,51  & 0,63  & 0,63  & 139\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 105,2 & 45,00 & 45,00 & 134\%  & \thead{Memorija (MB)} \\ \hline
+\multirow{2}{*}{Shakespeare} & \multirow{2}{*}{5.458.199}
+   & 1,29  & 0,55  & 0,55  & 134\%  & \thead{Vrijeme (s)} \\ \cline{3-7} 
+ & & 100,5 & 49,13 & 49,13 & 105\%  & \thead{Memorija (MB)} \\ \hline
+\end{tabular}
+}
+\caption{Rezultati mjerenja}
+\label{mjerenja}
+\end{table}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Literatura}
+\footnotesize{
+\begin{thebibliography}{99}% Beamer does not support BibTeX so references must be inserted manually as below
+\bibitem[new()]{newimpl}
+Induced suffix array and lcp construction based on the sais algorithm: new
+  source code.
+\newblock \url{https://github.com/kurpicz/sais-lite-lcp}.
+\newblock Accessed: January 12, 2019.
+
+\bibitem[ori()]{origimpl}
+Inducing the {LCP}-array: original source code.
+\newblock \url{http://algo2.iti.kit.edu/english/1828.php}.
+\newblock Accessed: January 12, 2019.
+
+\bibitem[sha()]{shakespeare}
+Shakespeare's complete works txt.
+\newblock
+  \url{https://ocw.mit.edu/ans7870/6/6.006/s08/lecturenotes/files/t8.shakespeare.txt}.
+\newblock Accessed: January 12, 2019.
+
+\bibitem[Fischer(2011)]{fischer2011inducing}
+Johannes Fischer.
+\newblock Inducing the lcp-array.
+\newblock U \emph{Workshop on Algorithms and Data Structures}, stranice
+  374--385. Springer, 2011.
+
+\bibitem[Kasai et~al.(2001)Kasai, Lee, Arimura, Arikawa, i
+  Park]{kasai2001linear}
+Toru Kasai, Gunho Lee, Hiroki Arimura, Setsuo Arikawa, i Kunsoo Park.
+\newblock Linear-time longest-common-prefix computation in suffix arrays and
+  its applications.
+\newblock U \emph{Annual Symposium on Combinatorial Pattern Matching}, stranice
+  181--192. Springer, 2001.
+\end{thebibliography}
+}
+\end{frame}
+
+\end{document} 

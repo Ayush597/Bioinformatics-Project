@@ -38,7 +38,7 @@ sa_to_lcp.o: sa_to_lcp.cc sa_to_lcp.h new/sais_new.h sais_lcp.h
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
 sais_new.o: new/sais_new.c new/sais_new.h
-	g++ -std=c++11 -c new/sais_new.c
+	$(CXX) $(CXXFLAGS) -c new/sais_new.c
 
 clean:
 	$(RM) -f $(SAIS_LCP_MAIN_OUT) \
